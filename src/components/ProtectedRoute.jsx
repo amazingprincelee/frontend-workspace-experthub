@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import Loader from "./Loader";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {

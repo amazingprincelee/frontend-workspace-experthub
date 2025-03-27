@@ -3,7 +3,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import FooterNav from "@/components/FooterNav";
-import { AuthProvider } from "@/contexts/AuthContext"; // Import AuthProvider
+import { AuthProvider } from "@/context/AuthContext"; // Import AuthProvider
 import NavbarSwitcher from "@/components/NavSwitcher";
 
 export const metadata: Metadata = {
