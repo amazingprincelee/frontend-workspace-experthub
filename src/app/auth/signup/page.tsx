@@ -7,6 +7,9 @@ import SignUpComp from "@/components/auth-components/SignUpComp";
 const signup = () => {
   const [role, setRole] = useState("client");
 
+  console.log(role);
+  
+
   return (
     <main >
       <img src="/images/auth-bg.png" className="h-[100vh] w-full" alt="" />
@@ -27,7 +30,7 @@ const signup = () => {
             <button
               onClick={() => setRole("client")}
               className={
-                role === "provider"
+                role === "client"
                   ? "bg-primary p-1 px-6 text-sm rounded-sm"
                   : "bg-gray p-1 px-6 text-sm rounded-sm"
               }
