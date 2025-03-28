@@ -1,6 +1,6 @@
 // app/admin/layout.tsx
 import { ReactNode } from "react";
-import { FaTachometerAlt, FaUsers, FaPlusSquare, FaWallet, FaLifeRing, FaCog } from "react-icons/fa";
+import { FaTachometerAlt, FaUsers, FaPlusSquare, FaWallet, FaLifeRing, FaCog, FaBriefcase } from "react-icons/fa";
 
 interface ProviderLayoutProps {
   children: ReactNode;
@@ -24,13 +24,19 @@ export default function AdminLayout({ children }: ProviderLayoutProps) {
             <li className="p-4 hover:bg-gray-200">
               <a href="/provider/clients" className="flex items-center">
                 <FaUsers className="mr-2 text-gray-600" />
-                <span>Your Clients</span>
+                <span>My Clients</span>
               </a>
             </li>
             <li className="p-4 hover:bg-gray-200">
               <a href="/provider/createspace" className="flex items-center">
                 <FaPlusSquare className="mr-2 text-gray-600" />
                 <span>Create Workspace</span>
+              </a>
+            </li>
+            <li className="p-4 hover:bg-gray-200">
+              <a href="/provider/createspace" className="flex items-center">
+              <FaBriefcase className="mr-2 text-gray-600" />
+                <span>My Workspaces</span>
               </a>
             </li>
             <li className="p-4 hover:bg-gray-200">

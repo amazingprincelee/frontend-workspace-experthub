@@ -37,14 +37,11 @@ const HeaderNav = () => {
           <Link href="/" className="hover:text-yellow-500">
             Home
           </Link>
+          <Link href="/reservation" className="hover:text-yellow-500">
+          Workspace
+          </Link>
           <Link href="/about" className="hover:text-yellow-500">
             About us
-          </Link>
-          <Link href="/trainings" className="hover:text-yellow-500">
-            Workspaces
-          </Link>
-          <Link href="/reservation" className="hover:text-yellow-500">
-          Reservation
           </Link>
         </div>
 

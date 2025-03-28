@@ -101,7 +101,7 @@ const CreateWorkspace = () => {
       });
 
       message.success("Workspace created successfully");
-      router.push(`/${user.role.toLowerCase()}/dashboard/createspace`);
+      router.push(`/${user.role.toLowerCase()}/createspace`);
     } catch (error) {
       console.error("Error creating workspace:", error);
       message.error(error.message || "Failed to create workspace");
@@ -203,6 +203,14 @@ const CreateWorkspace = () => {
 
         <Form.Item name="endDate" label="End Date">
           <Input type="date" />
+        </Form.Item>
+
+        <Form.Item
+          name="location"
+          label="Location"
+          rules={[{ required: true, message: "Please enter the location" }]}
+        >
+          <Input placeholder="Enter location (e.g., Rumuokwurusi Port Harcourt)" />
         </Form.Item>
 
         <Form.Item name="startTime" label="Start Time">
