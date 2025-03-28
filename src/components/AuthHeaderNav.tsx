@@ -39,7 +39,7 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
       }
     };
 
-    fetchNotifications();
+  //  fetchNotifications();
   }, [user]);
 
   // Logout handler

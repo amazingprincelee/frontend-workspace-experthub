@@ -3,7 +3,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import FooterNav from "@/components/FooterNav";
-import { AuthProvider } from "@/context/AuthContext"; // Import AuthProvider
+import { AuthProvider } from "@/context/AuthContext"; 
+import { WorkspaceProvider } from "@/context/WorkspaceContext";
 import NavbarSwitcher from "@/components/NavSwitcher";
 
 export const metadata: Metadata = {
@@ -21,9 +22,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
+        <WorkspaceProvider>
           <NavbarSwitcher />
           {children} 
           <FooterNav />
+          </WorkspaceProvider>
         </AuthProvider>
       </body>
     </html>
