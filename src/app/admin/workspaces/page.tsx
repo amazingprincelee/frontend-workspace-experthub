@@ -75,6 +75,13 @@ const AdminWorkspaces = () => {
                     key={workspace._id}
                     className="border rounded-lg shadow-lg p-4 bg-white cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-primary"
                     onClick={() => handleViewClick(workspace._id)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        handleViewClick(workspace._id);
+                      }
+                    }}
                   >
                     {/* Workspace Image */}
                     <img
@@ -119,7 +126,6 @@ const AdminWorkspaces = () => {
                         )}
                       </div>
                     </div>
-                   
                   </div>
                 ))}
               </div>
