@@ -26,7 +26,7 @@ interface Workspace {
   endTime: string;
 }
 
-const ReservationSearch: React.FC = () => {
+const WorkspaceReservation: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [filters, setFilters] = useState<Filter>({
@@ -53,17 +53,31 @@ const ReservationSearch: React.FC = () => {
         setCategories(categoryNames);
 
         // Fetch default workspaces (limited to 2)
-        const defaultWorkspacesResponse = await apiService.get("/workspace/default-workspaces");
-        const defaultWorkspaces: Workspace[] = defaultWorkspacesResponse.data.workspaces;
-        setWorkspaces(defaultWorkspaces);
+        try {
+          const defaultWorkspacesResponse = await apiService.get("/workspace/default-workspaces");
+          console.log("Fetched Workspaces:", defaultWorkspacesResponse.data.workspaces);
+          const defaultWorkspaces: Workspace[] = defaultWorkspacesResponse.data.workspaces || [];
+          setWorkspaces(defaultWorkspaces);
 
-        // Extract unique startTime and endTime for the "From" and "To" dropdowns
-        const fromTimes = Array.from(new Set<string>(defaultWorkspaces.map((ws) => ws.startTime).filter(Boolean)));
-        const toTimes = Array.from(new Set<string>(defaultWorkspaces.map((ws) => ws.endTime).filter(Boolean)));
-        setTimeOptions({ from: fromTimes, to: toTimes });
+          // Extract unique startTime and endTime for the "From" and "To" dropdowns
+          const fromTimes = Array.from(new Set<string>(defaultWorkspaces.map((ws) => ws.startTime).filter(Boolean)));
+          const toTimes = Array.from(new Set<string>(defaultWorkspaces.map((ws) => ws.endTime).filter(Boolean)));
+          setTimeOptions({ from: fromTimes, to: toTimes });
+        } catch (error) {
+          console.error("Error fetching workspaces:", error?.response?.data || error);
+          if (error?.response?.status === 401) {
+            message.info("Please log in to view workspaces");
+            setWorkspaces([]);
+            setTimeOptions({ from: [], to: [] });
+          } else {
+            throw error; // Re-throw other errors
+          }
+        }
       } catch (error) {
-        console.error("Error fetching initial data:", error);
+        console.error("Error fetching initial data:", error?.response?.data || error);
         message.error("Failed to load initial data");
+        setWorkspaces([]);
+        setTimeOptions({ from: [], to: [] });
       } finally {
         setIsLoading(false);
       }
@@ -90,7 +104,7 @@ const ReservationSearch: React.FC = () => {
       const toTimes = Array.from(new Set<string>(filteredWorkspaces.map((ws) => ws.endTime).filter(Boolean)));
       setTimeOptions({ from: fromTimes, to: toTimes });
     } catch (error) {
-      console.error("Error applying filters:", error);
+      console.error("Error applying filters:", error?.response?.data || error);
       message.error("Failed to fetch workspaces");
     } finally {
       setIsLoading(false);
@@ -214,15 +228,15 @@ const ReservationSearch: React.FC = () => {
         </div>
 
         <div className="flex flex-col">
-        <label htmlFor="btn">.</label>
-        <button
-        id="btn"
-          onClick={applyFilters}
-          className="bg-primary  m-2 text-white px-4 py-2 rounded"
-          disabled={isLoading}
-        >
-          {isLoading ? "Filtering..." : "Filter"}
-        </button>
+          <label htmlFor="btn">.</label>
+          <button
+            id="btn"
+            onClick={applyFilters}
+            className="bg-primary m-2 text-white px-4 py-2 rounded"
+            disabled={isLoading}
+          >
+            {isLoading ? "Filtering..." : "Filter"}
+          </button>
         </div>
       </div>
 
@@ -262,4 +276,4 @@ const ReservationSearch: React.FC = () => {
   );
 };
 
-export default ReservationSearch;
+export default WorkspaceReservation;
