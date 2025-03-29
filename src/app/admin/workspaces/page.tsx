@@ -62,7 +62,7 @@ const AdminWorkspaces = () => {
             <div key={category} className="mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">{category}</h2>
-                <Link href={`/admin/workspaces/category/${category}`}>
+                <Link href={`/admin/workspaces/category/${encodeURIComponent(category)}`}>
                   <Button type="link" className="text-primary">
                     VIEW ALL
                   </Button>

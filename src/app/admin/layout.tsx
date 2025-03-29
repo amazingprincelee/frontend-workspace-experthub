@@ -69,12 +69,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <span>Payments</span>
               </a>
             </li>
-            <li className="p-4 hover:bg-gray-200">
-              <a href="/admin/support" className="flex items-center">
-                <FaLifeRing className="mr-2 text-gray-600" />
-                <span>Support</span>
-              </a>
-            </li>
+           
             <li className="p-4 hover:bg-gray-200">
               <a href="/admin/settings" className="flex items-center">
                 <FaCog className="mr-2 text-gray-600" />

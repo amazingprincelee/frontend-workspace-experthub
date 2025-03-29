@@ -9,36 +9,42 @@ import { message, Button, Tag } from "antd";
 import Loader from "@/components/FetchLoader";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
+
 const AdminCategoryWorkspaces = () => {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const { category } = useParams();
+  const { category } = useParams(); // Get the category from the URL
   const [workspaces, setWorkspaces] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
+      if (!user || !category) return; // Wait for user and category to be available
+
       setIsLoading(true);
       try {
         const response = await apiService.post(
           "/workspace/category",
-          { category, userId: user._id }
+          { category, userId: user.id }, // Send category and userId in the request body
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
-        setWorkspaces(response.data.workspaces);
+        setWorkspaces(response.data.workspaces || []);
       } catch (error) {
-        console.error("Error fetching workspaces:", error);
-        message.error("Failed to fetch workspaces");
+        console.error("Error fetching workspaces by category:", error);
+        message.error("Failed to fetch workspaces for this category");
+        setWorkspaces([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (user && category) {
-      fetchWorkspaces();
-    }
+    fetchWorkspaces();
   }, [user, category]);
 
-  // Update this function to navigate to /admin/workspace/:workspaceId
   const handleViewClick = (workspaceId) => {
     router.push(`/admin/workspace/${workspaceId}`);
   };
@@ -58,16 +64,24 @@ const AdminCategoryWorkspaces = () => {
             {workspaces.map((workspace) => (
               <div
                 key={workspace._id}
-                className="border rounded-lg shadow-lg p-4 bg-white"
+                className="border rounded-lg shadow-lg p-4 bg-white cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-primary"
+                onClick={() => handleViewClick(workspace._id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleViewClick(workspace._id);
+                  }
+                }}
               >
                 <img
-                  src={workspace.thumbnail.url}
+                  src={workspace.thumbnail?.url || "https://via.placeholder.com/300x150"}
                   alt={workspace.title}
                   className="w-full h-40 object-cover rounded mb-4"
                 />
                 <h3 className="text-lg font-semibold mb-2">{workspace.title}</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  {workspace.about.length > 100
+                  {workspace.about?.length > 100
                     ? `${workspace.about.substring(0, 100)}...`
                     : workspace.about}
                 </p>
@@ -75,7 +89,7 @@ const AdminCategoryWorkspaces = () => {
                   {workspace.approved ? "Approved" : "Unapproved"}
                 </Tag>
                 <div className="flex mb-4">
-                  {workspace.registeredClients.slice(0, 4).map((client, index) => (
+                  {workspace.registeredClients?.slice(0, 4).map((client, index) => (
                     <img
                       key={client._id}
                       src={client.profilePicture || "/default-avatar.png"}
@@ -83,19 +97,13 @@ const AdminCategoryWorkspaces = () => {
                       className="w-8 h-8 rounded-full border-2 border-white -ml-2 first:ml-0"
                     />
                   ))}
-                  {workspace.registeredClients.length > 4 && (
+                  {workspace.registeredClients?.length > 4 && (
                     <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold -ml-2">
                       +{workspace.registeredClients.length - 4}
                     </div>
                   )}
                 </div>
-                <Button
-                  type="primary"
-                  onClick={() => handleViewClick(workspace._id)}
-                  className="w-full"
-                >
-                  View
-                </Button>
+               
               </div>
             ))}
           </div>
