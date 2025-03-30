@@ -13,7 +13,8 @@ const config: Config = {
         primary: '#F7A607',
         gray: "#D9D9D9",
         secondary: "#FDC332",
-        danger:"#FF0000"
+        danger:"#FF0000",
+        plateformgreen: "#53C48C"
       },
       fontFamily: {
         sans: ["Fredoka", "sans-serif"],
