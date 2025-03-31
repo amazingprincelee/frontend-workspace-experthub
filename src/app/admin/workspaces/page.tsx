@@ -20,11 +20,7 @@ const AdminWorkspaces = () => {
     const fetchWorkspaces = async () => {
       setIsLoading(true);
       try {
-        const response = await apiService.get(`/workspace/all?userId=${user.id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await apiService.get(`/workspace/all?adminId=${user.id}`);
         setWorkspaces(response.data.workspaces || {});
       } catch (error) {
         console.error("Error fetching workspaces:", error);

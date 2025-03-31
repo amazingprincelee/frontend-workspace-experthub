@@ -6,10 +6,8 @@ import {
   FaUserTie,
   FaBuilding,
   FaCalendarCheck,
-  FaWallet,
-  FaLifeRing,
-  FaCog,
   FaPlusSquare,
+  FaStar,
 } from "react-icons/fa";
 
 interface AdminLayoutProps {
@@ -63,19 +61,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <span>Add Category</span>
               </a>
             </li>
+            
             <li className="p-4 hover:bg-gray-200">
-              <a href="/admin/payments" className="flex items-center">
-                <FaWallet className="mr-2 text-gray-600" />
-                <span>Payments</span>
+              <a href="/admin/reviews" className="flex items-center">
+                <FaStar className="mr-2 text-gray-600" />
+                <span>Reviews</span>
               </a>
             </li>
            
-            <li className="p-4 hover:bg-gray-200">
-              <a href="/admin/settings" className="flex items-center">
-                <FaCog className="mr-2 text-gray-600" />
-                <span>Settings</span>
-              </a>
-            </li>
+           
           </ul>
         </nav>
       </aside>

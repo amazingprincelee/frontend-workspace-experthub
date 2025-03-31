@@ -10,7 +10,7 @@ const CreateWorkspace = () => <CreateWorkspaceComponent />;
 const AddCategory = () => <AddCategoryComponent />
 const Payments = () => <h1>Payments</h1>;
 const Support = () => <h1>Support</h1>;
-const Settings = () => <h1>Settings</h1>;
+const Reviews = () => <h1>Reviews</h1>;
 
 const componentsMap: { [key: string]: () => JSX.Element } = {
   dashboard: Dashboard,
@@ -21,7 +21,7 @@ const componentsMap: { [key: string]: () => JSX.Element } = {
   addcategory: AddCategory,
   payments: Payments,
   support: Support,
-  settings: Settings,
+  reviews: Reviews,
 };
 
 export default function Page({ params }: { params: { slug: string } }) {
