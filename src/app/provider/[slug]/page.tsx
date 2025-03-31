@@ -8,7 +8,7 @@ const Workspaces = () => <h1>Workspaces</h1>;
 const CreateWorkspace = () => <CreateWorkspaceComponent />;
 const Wallet = () => <h1>Wallet</h1>;
 const Support = () => <h1>Support</h1>;
-const Settings = () => <h1>Settings</h1>;
+
 
 const componentsMap: { [key: string]: () => JSX.Element } = {
   dashboard: Dashboard,
@@ -17,7 +17,7 @@ const componentsMap: { [key: string]: () => JSX.Element } = {
   createspace: CreateWorkspace,
   wallet: Wallet,
   support: Support,
-  settings: Settings,
+  
 };
 
 export default function Page({ params }: { params: { slug: string } }) {

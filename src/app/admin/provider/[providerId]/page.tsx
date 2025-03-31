@@ -198,14 +198,26 @@ const ProviderDetails = ({ params }: { params: { providerId: string } }) => {
       api.error({ message: "Please select a workspace" });
       return;
     }
+  
+    // Verify that the selectedWorkspace exists in allWorkspaces
+    const workspaceExists = allWorkspaces.some((workspace) => workspace._id === selectedWorkspace);
+    if (!workspaceExists) {
+      api.error({ message: "Selected workspace is invalid or no longer available" });
+      setSelectedWorkspace(""); // Reset the selection
+      return;
+    }
+  
     try {
+      console.log("Assigning provider:", params.providerId, "to workspace:", selectedWorkspace); // Debug log
       await apiService.post(`/workspace/assign/${selectedWorkspace}`, { id: params.providerId });
       setIsAssignModalVisible(false);
+      setSelectedWorkspace(""); // Reset the selection after successful assignment
       api.success({
         message: "Success",
         description: "Provider assigned to workspace successfully",
       });
     } catch (error: any) {
+      console.error("Error assigning provider to workspace:", error);
       api.error({
         message: "Failed to assign provider to workspace",
         description: error.response?.data?.message || error.message,
@@ -221,7 +233,7 @@ const ProviderDetails = ({ params }: { params: { providerId: string } }) => {
       return;
     }
     try {
-      await apiService.post("/transaction/add-funds", { userId: params.providerId, amount });
+      await apiService.post("/transactions/add-funds", { userId: params.providerId, amount });
       setBalance((prev) => prev + amount);
       setIsCreditModalVisible(false);
       api.success({
@@ -433,87 +445,36 @@ const ProviderDetails = ({ params }: { params: { providerId: string } }) => {
         </div>
 
         {/* Edit Modal */}
-        <Modal
-          title="Edit Provider Details"
-          open={isEditModalVisible}
-          onOk={handleEditSubmit}
-          onCancel={() => setIsEditModalVisible(false)}
-        >
-          <div className="space-y-4">
-            <div>
-              <label>Full Name</label>
-              <Input
-                value={editFormData.fullName}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, fullName: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label>Email</label>
-              <Input
-                value={editFormData.email}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, email: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label>Phone</label>
-              <Input
-                value={editFormData.phone}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, phone: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label>Gender</label>
-              <Input
-                value={editFormData.gender}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, gender: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label>Age</label>
-              <Input
-                value={editFormData.age}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, age: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label>Country</label>
-              <Input
-                value={editFormData.country}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, country: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label>State</label>
-              <Input
-                value={editFormData.state}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, state: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label>Company Name</label>
-              <Input
-                value={editFormData.companyName}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, companyName: e.target.value })
-                }
-              />
-            </div>
-          </div>
-        </Modal>
+       {/* Assign to Workspace Modal */}
+<Modal
+  title="Assign to Workspace"
+  open={isAssignModalVisible}
+  onOk={handleAssignSubmit}
+  onCancel={() => setIsAssignModalVisible(false)}
+  okButtonProps={{ disabled: allWorkspaces.length === 0 }} // Disable OK button if no workspaces
+>
+  {allWorkspaces.length === 0 ? (
+    <p className="text-gray-500">No workspaces available for assignment.</p>
+  ) : (
+    <Select
+      style={{ width: "100%" }}
+      placeholder="Select a workspace"
+      onChange={(value) => setSelectedWorkspace(value)}
+      value={selectedWorkspace}
+      showSearch
+      optionFilterProp="children"
+      filterOption={(input, option) =>
+        (option?.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
+      }
+    >
+      {allWorkspaces.map((workspace) => (
+        <Select.Option key={workspace._id} value={workspace._id}>
+          {workspace.title}
+        </Select.Option>
+      ))}
+    </Select>
+  )}
+</Modal>
 
         {/* Assign to Workspace Modal */}
         <Modal

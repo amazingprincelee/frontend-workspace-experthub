@@ -5,7 +5,7 @@ const Dashboard = () => <h1>Dashboard</h1>;
 const experthub = () => <h1>ExpertHub Workspaces</h1>;
 const providersWorkspace = () => <h1>Provider's Workspace</h1>;
 const subscriptions = () => <h1>My subscribe workspace</h1>;
-const Payments = () => <h1>Payments</h1>;
+const Wallet = () => <h1>Payments</h1>;
 const Support = () => <h1>Support</h1>;
 const Settings = () => <h1>Settings</h1>;
 
@@ -14,7 +14,7 @@ const componentsMap: { [key: string]: () => JSX.Element } = {
   experthub: experthub,
   provider: providersWorkspace,
   subscriptions: subscriptions,
-  payments: Payments,
+  wallet: Wallet,
   support: Support,
   settings: Settings,
 };

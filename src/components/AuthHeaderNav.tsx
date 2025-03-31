@@ -1,4 +1,3 @@
-// components/AuthHeaderNav.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -6,13 +5,15 @@ import { Dropdown, notification as antdNotification } from "antd";
 import type { MenuProps } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/context/AuthContext";
 import apiService from "@/utils/apiService";
+import HeaderNav from "./HeaderNav";
 
-const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
-  const { user, logout: contextLogout } = useAuth();
+const AuthHeaderNav = ({ setToggle }: { setToggle?: () => void }) => {
+  const { user, loading: authLoading, logout: contextLogout } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State to manage mobile menu visibility
   const router = useRouter();
 
   // Fetch notifications when user is available
@@ -23,7 +24,7 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
       setLoadingNotifications(true);
       try {
         const token = localStorage.getItem("token");
-        const response = await apiService.get(`/notifications/all/${user.id}`, {
+        const response = await apiService.get(`/space-notifications/all/${user.id}`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -39,7 +40,7 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
       }
     };
 
-  //  fetchNotifications();
+    fetchNotifications();
   }, [user]);
 
   // Logout handler
@@ -63,7 +64,7 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
 
   // Dynamic dashboard route based on user role
   const getDashboardRoute = () => {
-    if (!user || !user.role) return "/"; // Fallback if no user or role
+    if (!user || !user.role) return "/";
     switch (user.role.toLowerCase()) {
       case "admin":
         return "/admin/dashboard";
@@ -72,15 +73,24 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
       case "provider":
         return "/provider/dashboard";
       default:
-        return "/"; // Fallback to home if role is unknown
+        return "/";
     }
   };
 
   // Handle dashboard link click
-  const handleDashboardClick = (e) => {
-    e.preventDefault(); // Prevent default anchor behavior
+  const handleDashboardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     const route = getDashboardRoute();
-    router.push(route); // Navigate to the appropriate dashboard
+    router.push(route);
+    setIsMenuOpen(false); // Close the menu after clicking a link
+  };
+
+  // Toggle mobile menu
+  const toggleMenu = () => {
+    setIsMenuOpen((prev) => !prev);
+    if (setToggle) {
+      setToggle(); // Call the parent setToggle if provided
+    }
   };
 
   // Notification dropdown items
@@ -140,8 +150,12 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
     },
   ];
 
-  if (!user) return null;
+  // If user data is still loading or user is not available, render the HeaderNav component
+  if (authLoading || !user) {
+    return <HeaderNav />;
+  }
 
+  // Render the authenticated navigation bar once user data is available
   return (
     <section className="fixed top-0 left-0 w-full bg-[#F8F7F4] z-50 shadow-[0px_1px_2.8px_0px_#1E1E1E38]">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -149,10 +163,11 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
         <div className="flex items-center space-x-4">
           <div className="lg:hidden">
             <img
-              onClick={setToggle}
+              onClick={toggleMenu}
               src="/images/hamburger.png"
               className="w-8 h-8 cursor-pointer"
               alt="Menu"
+              aria-label="Toggle navigation menu"
             />
           </div>
           <div className="hidden lg:block">
@@ -162,12 +177,17 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
         </div>
 
         {/* Center Section: Navigation Links */}
-        <nav className="hidden lg:flex flex-1 justify-center">
-          <ul className="flex items-center space-x-8">
+        <nav
+          className={`${
+            isMenuOpen ? "block" : "hidden"
+          } lg:flex flex-1 justify-center absolute lg:static top-16 left-0 w-full bg-[#F8F7F4] lg:bg-transparent shadow-lg lg:shadow-none z-40`}
+        >
+          <ul className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-8 p-4 lg:p-0">
             <li>
               <a
-                href={"/"}
-                className="flex flex-col items-center gap-1 text-sm hover:text-gray-700"
+                href="/"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex flex-col lg:flex-row items-center gap-1 text-sm hover:text-gray-700"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -177,7 +197,7 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
                   className="bi bi-house"
                   viewBox="0 0 16 16"
                 >
-                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z" />
+                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5.5V7.207l5-5z" />
                 </svg>
                 Home
               </a>
@@ -186,7 +206,7 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
               <a
                 href="#"
                 onClick={handleDashboardClick}
-                className="flex flex-col items-center gap-1 text-sm hover:text-gray-700"
+                className="flex flex-col lg:flex-row items-center gap-1 text-sm hover:text-gray-700"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -205,11 +225,11 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
                 Dashboard
               </a>
             </li>
-
             <li>
               <a
-                href={"/"}
-                className="flex flex-col items-center gap-1 text-sm hover:text-gray-700"
+                href="/faq"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex flex-col lg:flex-row items-center gap-1 text-sm hover:text-gray-700"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -226,8 +246,9 @@ const AuthHeaderNav = ({ setToggle }: { setToggle: () => void }) => {
             </li>
             <li>
               <a
-                href={"/"}
-                className="flex flex-col items-center gap-1 text-sm hover:text-gray-700"
+                href="/announcement"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex flex-col lg:flex-row items-center gap-1 text-sm hover:text-gray-700"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
