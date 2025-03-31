@@ -180,7 +180,7 @@ const ProvidersPage: React.FC = () => {
                   <p className="font-bold">Details</p>
                   <p>Email: {provider.email}</p>
                   <p>Workspaces: {provider.workspacesCreated} created</p>
-                  <p>Verified: {provider.isVerified ? "TRUE" : "FALSE"}</p>
+                  <p>Verified: {provider.isVerified ? "Verified" : "Not Verified"}</p>
                 </div>
 
                 {/* Right: Phone Number */}
