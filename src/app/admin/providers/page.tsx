@@ -60,10 +60,9 @@ const ProvidersPage: React.FC = () => {
   const handleDelete = async (providerId: string) => {
     try {
       await apiService.delete(`/user/${providerId}`, {
-        data: { adminId: user.id }, // Pass adminId in the request body
+        data: { adminId: user.id },
       });
 
-      // Update the local state by removing the deleted provider
       setProviders((prevProviders) =>
         prevProviders.filter((provider) => provider.id !== providerId)
       );
@@ -83,25 +82,23 @@ const ProvidersPage: React.FC = () => {
   // Handle blocking/unblocking a provider
   const handleBlock = async (providerId: string) => {
     try {
-      // Find the provider to determine the new blocked status (toggle between true/false)
       const provider = providers.find((p) => p.id === providerId);
       if (!provider) {
         throw new Error("Provider not found in local state");
       }
       const newBlockedStatus = !provider.blocked;
-  
+
       await apiService.put(`/user/block-user/${providerId}`, {
         adminId: user.id,
         blocked: newBlockedStatus,
       });
-  
-      // Update the local state to reflect the new blocked status
+
       setProviders((prevProviders) =>
         prevProviders.map((p) =>
           p.id === providerId ? { ...p, blocked: newBlockedStatus } : p
         )
       );
-  
+
       api.success({
         message: "Success",
         description: `Provider ${newBlockedStatus ? "blocked" : "unblocked"} successfully`,
@@ -113,7 +110,6 @@ const ProvidersPage: React.FC = () => {
       });
     }
   };
-  
 
   const handleMenuClick = (action: string, providerId: string) => {
     switch (action) {
@@ -156,10 +152,10 @@ const ProvidersPage: React.FC = () => {
             {providers.map((provider) => (
               <div
                 key={provider.id}
-                className="flex items-center justify-between p-4 border rounded-lg shadow-sm bg-white"
+                className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0 p-4 border rounded-lg shadow-sm bg-white"
               >
                 {/* Left: Profile Picture, Full Name, Company */}
-                <div className="flex items-center space-x-4 w-1/3">
+                <div className="flex items-center space-x-4 w-full md:w-1/3">
                   {provider.profilePicture ? (
                     <img
                       src={provider.profilePicture}
@@ -169,14 +165,14 @@ const ProvidersPage: React.FC = () => {
                   ) : (
                     <FaUserCircle className="w-12 h-12 text-gray-400" />
                   )}
-                  <div>
+                  <div className="space-y-1">
                     <h3 className="text-lg font-semibold">{provider.fullName}</h3>
                     <p className="text-sm text-gray-500">{provider.companyName}</p>
                   </div>
                 </div>
 
                 {/* Middle: Details Column */}
-                <div className="w-1/3 text-sm text-gray-600">
+                <div className="w-full md:w-1/3 text-sm text-gray-600 space-y-1">
                   <p className="font-bold">Details</p>
                   <p>Email: {provider.email}</p>
                   <p>Workspaces: {provider.workspacesCreated} created</p>
@@ -184,7 +180,7 @@ const ProvidersPage: React.FC = () => {
                 </div>
 
                 {/* Right: Phone Number */}
-                <div className="w-1/3 text-sm text-green-600 font-bold text-right mr-28">
+                <div className="w-full md:w-1/3 text-sm text-green-600 font-bold text-center md:text-right">
                   <p>{provider.phone}</p>
                 </div>
 
@@ -204,5 +200,3 @@ const ProvidersPage: React.FC = () => {
 };
 
 export default ProvidersPage;
-
-

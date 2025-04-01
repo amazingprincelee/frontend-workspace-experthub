@@ -89,12 +89,13 @@ export default function Announcement() {
           </Button>
         </div>
       )}
+      <h1 className='font-bold text-2xl ml-6 mb-2'>Announcement</h1>
 
       {/* Timeline visible to all users */}
       <Timeline>
         {announcements.map((announcement) => (
           <Timeline.Item key={announcement._id}>
-            <h3>{announcement.title}</h3>
+            <h2 className='font-bold'>{announcement.title}</h2>
             <p>{announcement.content}</p>
             <p>{dayjs(announcement.createdAt).format('MMMM D, YYYY')}</p>
           </Timeline.Item>

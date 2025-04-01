@@ -4,19 +4,20 @@ import CreateWorkspaceComponent from "@/components/create-workspace/CreateWorksp
 
 const Dashboard = () => <h1>Dashboard</h1>;
 const Clients = () => <h1>Clients</h1>;
-const Workspaces = () => <h1>Workspaces</h1>;
-const CreateWorkspace = () => <CreateWorkspaceComponent />;
+const Workspaces = () => <h1>My Workspaces</h1>;
 const Wallet = () => <h1>Wallet</h1>;
 const Support = () => <h1>Support</h1>;
+const CreateWorkspace = () => <CreateWorkspaceComponent />;
+
 
 
 const componentsMap: { [key: string]: () => JSX.Element } = {
   dashboard: Dashboard,
   clients: Clients,
   workspaces: Workspaces,
-  createspace: CreateWorkspace,
   wallet: Wallet,
   support: Support,
+  createspace: CreateWorkspace,
   
 };
 

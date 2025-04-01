@@ -61,7 +61,7 @@ export default function ProviderLayout({ children }: ProviderLayoutProps) {
         <nav className="mt-4">
           <ul className="space-y-2">
             <li className="p-4 hover:bg-gray-200">
-              <Link href="/provider" className="flex items-center" onClick={closeSidebar}>
+              <Link href="/provider/dashboard" className="flex items-center" onClick={closeSidebar}>
                 <FaTachometerAlt className="mr-2 text-gray-600" />
                 <span>Dashboard</span>
               </Link>
@@ -70,12 +70,6 @@ export default function ProviderLayout({ children }: ProviderLayoutProps) {
               <Link href="/provider/clients" className="flex items-center" onClick={closeSidebar}>
                 <FaUsers className="mr-2 text-gray-600" />
                 <span>Clients</span>
-              </Link>
-            </li>
-            <li className="p-4 hover:bg-gray-200">
-              <Link href="/provider/workspaces" className="flex items-center" onClick={closeSidebar}>
-                <FaBuilding className="mr-2 text-gray-600" />
-                <span>Workspaces</span>
               </Link>
             </li>
             <li className="p-4 hover:bg-gray-200">
@@ -122,7 +116,7 @@ export default function ProviderLayout({ children }: ProviderLayoutProps) {
         {/* Bottom Navigation Bar (Mobile Only) */}
         {isMobile && (
           <nav className="fixed bottom-0 left-0 w-full bg-white shadow-md p-2 flex justify-around items-center border-t">
-            <Link href="/provider" className="flex flex-col items-center">
+            <Link href="/provider/dashboard" className="flex flex-col items-center">
               <AiFillHome size={24} className="text-gray-600" />
               <span className="text-xs">Home</span>
             </Link>
@@ -134,9 +128,9 @@ export default function ProviderLayout({ children }: ProviderLayoutProps) {
               <FaUsers size={24} className="text-gray-600" />
               <span className="text-xs">Client</span>
             </Link>
-            <Link href="/admin/providers" className="flex flex-col items-center">
-              <FaUserTie size={24} className="text-gray-600" />
-              <span className="text-xs">Provider</span>
+            <Link href="/provider/wallet" className="flex flex-col items-center">
+              <FaPlusSquare size={24} className="text-gray-600" />
+              <span className="text-xs">Wallet</span>
             </Link>
             
           </nav>
