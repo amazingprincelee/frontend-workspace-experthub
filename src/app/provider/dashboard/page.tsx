@@ -6,8 +6,7 @@ import apiService from "@/utils/apiService";
 import { notification } from "antd";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { FaUsers, FaBuilding, FaChartLine, FaUserTie } from "react-icons/fa";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { FaUsers, FaBuilding, FaChartLine, FaUserTie, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import Image from "next/image";
 
 interface DashboardStats {
@@ -25,20 +24,19 @@ interface Workspace {
   thumbnail: { url: string };
   registeredClients: { _id: string; profilePicture: string }[];
   startDate: string;
+  approved: boolean;
 }
 
 const ProviderDashboard: React.FC = () => {
   const [api, contextHolder] = notification.useNotification();
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [allWorkspaces, setAllWorkspaces] = useState<Workspace[]>([]);
-  const [recommendedWorkspaces, setRecommendedWorkspaces] = useState<Workspace[]>([]);
+  const [approvedWorkspaces, setApprovedWorkspaces] = useState<Workspace[]>([]);
+  const [unapprovedWorkspaces, setUnapprovedWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [error, setError] = useState<string | null>(null); // State to hold error messages
+  const [error, setError] = useState<string | null>(null);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  // Fetch provider dashboard statistics
   const fetchDashboardStats = async () => {
     try {
       const response = await apiService.get("/workspace/provider-stats", {
@@ -50,85 +48,81 @@ const ProviderDashboard: React.FC = () => {
     }
   };
 
-  // Fetch all workspaces for a particular provider both approved and unapproved (for "All Workspaces" section)
-  const fetchAllWorkspaces = async () => {
+  const fetchProviderWorkspaces = async () => {
     try {
-      const response = await apiService.get(`/workspace/all?providerId=${user.id}`);
-      const groupedWorkspaces = response.data.workspaces;
-      const workspacesList: Workspace[] = Object.values(groupedWorkspaces)
-        .flat()
-        .map((workspace: any) => ({
-          _id: workspace._id,
-          title: workspace.title,
-          providerName: workspace.providerName,
-          about: workspace.about,
-          thumbnail: workspace.thumbnail,
-          registeredClients: workspace.registeredClients || [],
-          startDate: workspace.startDate,
-        }));
-      setAllWorkspaces(workspacesList.slice(0, 3));
-    } catch (error: any) {
-      setError(error.response?.data?.message || error.message);
-    }
-  };
+      const response = await apiService.get(`/workspace/creator/${user.id}`);
+      console.log('Raw API response:', response.data);
 
-  // Fetch recommended workspaces (random workspaces)
-  const fetchRecommendedWorkspaces = async () => {
-    try {
-      const response = await apiService.get(`/workspace/recommended`);
-      console.log("Recommended Workspace Response:", response);
-  
-      // Since the backend returns a single workspace, we wrap it in an array for consistency with the UI
-      const workspace = response.data.workspace;
-      const workspaceData: Workspace = {
+      // Check if the response has the expected structure
+      if (!response.data.approvedWorkspaces || !response.data.unapprovedWorkspaces) {
+        console.log('Invalid response structure');
+        setApprovedWorkspaces([]);
+        setUnapprovedWorkspaces([]);
+        return;
+      }
+
+      // Map approved workspaces
+      const approved: Workspace[] = response.data.approvedWorkspaces.map((workspace: any) => ({
         _id: workspace._id,
-        title: workspace.title,
-        providerName: workspace.providerName,
-        about: workspace.about,
-        thumbnail: workspace.thumbnail,
+        title: workspace.title || "Untitled Workspace",
+        providerName: workspace.providerName || "Unknown Provider",
+        about: workspace.about || "No description available",
+        thumbnail: workspace.thumbnail || { url: "/placeholder-workspace.jpg" },
         registeredClients: workspace.registeredClients || [],
-        startDate: workspace.startDate,
-      };
-      setRecommendedWorkspaces([workspaceData]); // Set as an array with one item
+        startDate: workspace.startDate || new Date().toISOString(),
+        approved: workspace.approved !== undefined ? workspace.approved : true, // Should always be true
+      }));
+
+      // Map unapproved workspaces
+      const unapproved: Workspace[] = response.data.unapprovedWorkspaces.map((workspace: any) => ({
+        _id: workspace._id,
+        title: workspace.title || "Untitled Workspace",
+        providerName: workspace.providerName || "Unknown Provider",
+        about: workspace.about || "No description available",
+        thumbnail: workspace.thumbnail || { url: "/placeholder-workspace.jpg" },
+        registeredClients: workspace.registeredClients || [],
+        startDate: workspace.startDate || new Date().toISOString(),
+        approved: workspace.approved !== undefined ? workspace.approved : false, // Should always be false
+      }));
+
+      console.log('Processed approved workspaces:', approved);
+      console.log('Processed unapproved workspaces:', unapproved);
+
+      setApprovedWorkspaces(approved);
+      setUnapprovedWorkspaces(unapproved);
+
+      if (unapproved.length === 0 && approved.length > 0) {
+        console.log('No unapproved workspaces found, but approved workspaces exist');
+      }
     } catch (error: any) {
       setError(error.response?.data?.message || error.message);
+      console.error('Fetch error:', error);
     }
   };
 
-  // Load data when user is available
   useEffect(() => {
     if (!user || authLoading) return;
+    console.log('Current user:', { id: user.id, role: user.role });
     const loadData = async () => {
       setLoading(true);
       await Promise.all([
         fetchDashboardStats(),
-      //  fetchAllWorkspaces(),
-        fetchRecommendedWorkspaces(),
+        fetchProviderWorkspaces(),
       ]);
       setLoading(false);
     };
     loadData();
   }, [user, authLoading]);
 
-  // Display error notifications
   useEffect(() => {
     if (error) {
       api.error({
         message: "Error",
         description: error,
       });
-      setError(null); // Clear the error after displaying
+      setError(null);
     }
   }, [error, api]);
-
-  // Handle carousel navigation for "All Workspaces"
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? allWorkspaces.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === allWorkspaces.length - 1 ? 0 : prev + 1));
-  };
 
   if (loading) {
     return <div className="text-center p-6 text-gray">Loading...</div>;
@@ -138,98 +132,72 @@ const ProviderDashboard: React.FC = () => {
     <ProtectedRoute allowedRoles={["provider"]}>
       <div className="container mx-auto px-4 sm:px-6 py-6 bg-background min-h-screen">
         {contextHolder}
-        
-        {/* Statistics Section */}
+
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
           <StatCard 
             icon={<FaBuilding className="text-blue-500 text-xl sm:text-2xl" />}
-            title="Total No of Workspaces"
+            title="Total Workspaces"
             value={stats?.totalWorkspaces || 0}
             bgColor="bg-blue-100"
           />
           <StatCard 
             icon={<FaUsers className="text-yellow-500 text-xl sm:text-2xl" />}
-            title="Total No of Clients"
+            title="Total Clients"
             value={stats?.totalClients || 0}
             bgColor="bg-yellow-100"
           />
           <StatCard 
             icon={<FaChartLine className="text-green-500 text-xl sm:text-2xl" />}
-            title="Total No of Subscription"
+            title="Total Subscriptions"
             value={stats?.totalSubscriptions || 0}
             bgColor="bg-green-100"
           />
           <StatCard 
             icon={<FaUserTie className="text-purple-500 text-xl sm:text-2xl" />}
-            title="Workspace Assigned to "
+            title="Assigned Workspaces"
             value={stats?.totalProviders || 0}
             bgColor="bg-purple-100"
           />
         </div>
 
-        {/* Create Workspace Button */}
-        <div className="flex justify-center mb-8">
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button
             onClick={() => router.push("/provider/createspace")}
             className="bg-primary text-white font-heading font-semibold py-2 px-6 rounded-lg hover:bg-secondary transition text-sm sm:text-base"
           >
             + Create Workspace
           </button>
+         
+          <button
+            onClick={fetchProviderWorkspaces}
+            className="bg-gray-500 text-white font-heading font-semibold py-2 px-6 rounded-lg hover:bg-gray-600 transition text-sm sm:text-base"
+          >
+            Refresh
+          </button>
         </div>
 
-        {/* All Workspaces Section */}
         <SectionContainer 
-          title="All Workspaces" 
-          viewAllLink="/provider/workspaces"
-          isEmpty={allWorkspaces.length === 0}
-          emptyMessage="No workspaces found"
+          title="Approved Workspaces" 
+          viewAllLink="/provider/workspaces/approved"
+          isEmpty={approvedWorkspaces.length === 0}
+          emptyMessage="No approved workspaces found"
         >
-          <div className="relative">
-            <div className="flex overflow-x-auto space-x-4 scrollbar-hide pb-2">
-              {allWorkspaces.map((workspace, index) => (
-                <div
-                  key={workspace._id}
-                  className={`flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 transition-transform duration-300 ${
-                    index === currentIndex ? "block" : "hidden sm:block"
-                  }`}
-                >
-                  <WorkspaceCard workspace={workspace} />
-                </div>
-              ))}
-            </div>
-            {allWorkspaces.length > 1 && (
-              <>
-                <button
-                  onClick={handlePrev}
-                  className="absolute top-1/2 -left-2 sm:-left-4 transform -translate-y-1/2 bg-primary text-white p-2 rounded-full hover:bg-secondary hidden sm:block"
-                >
-                  <IoIosArrowBack />
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="absolute top-1/2 -right-2 sm:-right-4 transform -translate-y-1/2 bg-primary text-white p-2 rounded-full hover:bg-secondary hidden sm:block"
-                >
-                  <IoIosArrowForward />
-                </button>
-              </>
-            )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {approvedWorkspaces.slice(0, 4).map((workspace) => (
+              <WorkspaceCard key={workspace._id} workspace={workspace} />
+            ))}
           </div>
         </SectionContainer>
 
-        {/* Recommended Workspaces Section */}
         <SectionContainer 
-          title="Recommended for You" 
-          viewAllLink="/provider/workspaces"
-          isEmpty={recommendedWorkspaces.length === 0}
-          emptyMessage="No recommended workspaces found"
+          title="Pending Approval Workspaces" 
+          viewAllLink="/provider/workspaces/unapproved"
+          isEmpty={unapprovedWorkspaces.length === 0}
+          emptyMessage="No workspaces pending approval"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {recommendedWorkspaces.map((workspace) => (
-              <RecommendedWorkspaceCard 
-                key={workspace._id} 
-                workspace={workspace} 
-                onClick={() => router.push(`/workspace/${workspace._id}`)}
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {unapprovedWorkspaces.slice(0, 4).map((workspace) => (
+              <WorkspaceCard key={workspace._id} workspace={workspace} />
             ))}
           </div>
         </SectionContainer>
@@ -238,7 +206,67 @@ const ProviderDashboard: React.FC = () => {
   );
 };
 
-// Reusable Stat Card Component
+const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => (
+  <div className="bg-white rounded-lg shadow-sm border overflow-hidden h-full flex flex-col">
+    <div className="relative aspect-video">
+      <Image
+        src={workspace.thumbnail?.url || "/placeholder-workspace.jpg"}
+        alt={workspace.title}
+        fill
+        className="object-cover"
+      />
+    </div>
+    <div className="p-3 sm:p-4 flex-grow">
+      <div className="flex justify-between items-center mb-1">
+        <h3 className="text-base sm:text-lg font-heading font-semibold text-primary">
+          {workspace.title}
+        </h3>
+        {workspace.approved ? (
+          <FaCheckCircle className="text-green-500" title="Approved" />
+        ) : (
+          <FaTimesCircle className="text-red-500" title="Pending Approval" />
+        )}
+      </div>
+      <p className="text-xs sm:text-sm text-gray mb-1">
+        Provider: {workspace.providerName}
+      </p>
+      <p className="text-xs sm:text-sm text-gray mb-3">
+        {workspace.about?.substring(0, 50)}...
+      </p>
+      <div className="flex items-center space-x-2 mb-3">
+        <div className="flex -space-x-2">
+          {workspace.registeredClients.slice(0, 3).map((client) => (
+            <div
+              key={client._id}
+              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white overflow-hidden"
+            >
+              <Image
+                src={client.profilePicture || "/placeholder-user.jpg"}
+                alt="Client"
+                width={32}
+                height={32}
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+        <p className="text-xs sm:text-sm text-gray">
+          Clients: {workspace.registeredClients.length}
+        </p>
+      </div>
+      <div className="flex items-center">
+        <div className="w-full bg-gray-200 rounded-full h-2 sm:h-2.5">
+          <div
+            className="bg-green-500 h-full rounded-full"
+            style={{ width: "75%" }} // This could be dynamic based on some metric
+          ></div>
+        </div>
+        <p className="text-xs sm:text-sm text-gray ml-2">75%</p>
+      </div>
+    </div>
+  </div>
+);
+
 const StatCard = ({ icon, title, value, bgColor }: { icon: React.ReactNode, title: string, value: number, bgColor: string }) => (
   <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border flex items-center space-x-3">
     <div className={`p-2 sm:p-3 ${bgColor} rounded-full`}>
@@ -251,7 +279,6 @@ const StatCard = ({ icon, title, value, bgColor }: { icon: React.ReactNode, titl
   </div>
 );
 
-// Reusable Section Container Component
 const SectionContainer = ({ 
   title, 
   viewAllLink, 
@@ -286,90 +313,5 @@ const SectionContainer = ({
     </div>
   );
 };
-
-// Reusable Workspace Card Component
-const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => (
-  <div className="bg-white rounded-lg shadow-sm border overflow-hidden h-full flex flex-col">
-    <div className="relative aspect-video">
-      <Image
-        src={workspace.thumbnail?.url || "/placeholder-workspace.jpg"}
-        alt={workspace.title}
-        fill
-        className="object-cover"
-      />
-    </div>
-    <div className="p-3 sm:p-4 flex-grow">
-      <h3 className="text-base sm:text-lg font-heading font-semibold text-primary mb-1">
-        {workspace.title}
-      </h3>
-      <p className="text-xs sm:text-sm text-gray mb-1">
-        Provider: {workspace.providerName}
-      </p>
-      <p className="text-xs sm:text-sm text-gray mb-3">
-        {workspace.about?.substring(0, 50)}...
-      </p>
-      <div className="flex items-center space-x-2 mb-3">
-        <div className="flex -space-x-2">
-          {workspace.registeredClients.slice(0, 3).map((client) => (
-            <div
-              key={client._id}
-              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white overflow-hidden"
-            >
-              <Image
-                src={client.profilePicture || "/placeholder-user.jpg"}
-                alt="Client"
-                width={32}
-                height={32}
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
-        <p className="text-xs sm:text-sm text-gray">
-          Clients: {workspace.registeredClients.length}
-        </p>
-      </div>
-      <div className="flex items-center">
-        <div className="w-full bg-gray-200 rounded-full h-2 sm:h-2.5">
-          <div
-            className="bg-green-500 h-full rounded-full"
-            style={{ width: "75%" }}
-          ></div>
-        </div>
-        <p className="text-xs sm:text-sm text-gray ml-2">75%</p>
-      </div>
-    </div>
-  </div>
-);
-
-// Reusable Recommended Workspace Card Component
-const RecommendedWorkspaceCard = ({ workspace, onClick }: { workspace: Workspace, onClick: () => void }) => (
-  <div className="bg-white rounded-lg shadow-sm border overflow-hidden h-full flex flex-col">
-    <div className="relative aspect-video">
-      <Image
-        src={workspace.thumbnail?.url || "/placeholder-workspace.jpg"}
-        alt={workspace.title}
-        fill
-        className="object-cover"
-      />
-    </div>
-    <div className="p-3 sm:p-4 flex-grow">
-      <p className="text-xs sm:text-sm text-gray mb-1">
-        Provider: {workspace.providerName}
-      </p>
-      <h3 className="text-base sm:text-lg font-heading font-semibold text-primary mb-2">
-        {workspace.title?.substring(0, 30)}...
-      </h3>
-      <p className="text-xs sm:text-sm text-gray mb-4">
-        {new Date(workspace.startDate).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })}
-      </p>
-      
-    </div>
-  </div>
-);
 
 export default ProviderDashboard;
