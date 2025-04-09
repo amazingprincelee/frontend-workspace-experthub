@@ -34,14 +34,23 @@ const HeaderNav = () => {
 
         {/* Centered Links */}
         <div className="hidden md:flex space-x-6 items-center mx-auto">
-          <Link href="/" className="hover:text-yellow-500">
-            Home
+          <Link href="https://www.experthubllc.com/home#services" className="hover:text-yellow-500">
+            Services
           </Link>
-          <Link href="/reservation" className="hover:text-yellow-500">
+          <Link href="https://www.experthubllc.com/home#expert" className="hover:text-yellow-500">
+            Find Experts
+          </Link>
+          <Link href="/" className="hover:text-yellow-500">
           Workspace
           </Link>
-          <Link href="/about" className="hover:text-yellow-500">
-            About us
+          <Link href="https://www.experthubllc.com/home#training" className="hover:text-yellow-500">
+            Trainings
+          </Link>
+          <Link href="https://www.experthubllc.com/home#events" className="hover:text-yellow-500">
+            Events
+          </Link>
+          <Link href="https://www.experthubllc.com/home#contact" className="hover:text-yellow-500">
+            Contact
           </Link>
         </div>
 
@@ -76,23 +85,33 @@ const HeaderNav = () => {
         <div className="md:hidden bg-white shadow-md">
           <ul className="flex flex-col justify-start space-y-4 py-4 px-4">
             <li>
-              <Link href="/" onClick={toggleMobileMenu}>
-                Home
+              <Link href="https://www.experthubllc.com/home#services" onClick={toggleMobileMenu}>
+                Services
               </Link>
             </li>
             <li>
-              <Link href="/About" onClick={toggleMobileMenu}>
-                About us
-              </Link>
-            </li>
-            <li>
-              <Link href="/trainings" onClick={toggleMobileMenu}>
-                Workspaces
+              <Link href="https://www.experthubllc.com/home#expert" onClick={toggleMobileMenu}>
+                Find Experts
               </Link>
             </li>
             <li>
               <Link href="/reservation" onClick={toggleMobileMenu}>
-              Reservation
+                Workspaces
+              </Link>
+            </li>
+            <li>
+              <Link href="https://www.experthubllc.com/home#training" onClick={toggleMobileMenu}>
+              Trainings
+              </Link>
+            </li>
+            <li>
+              <Link href="https://www.experthubllc.com/home#events" onClick={toggleMobileMenu}>
+              Events
+              </Link>
+            </li>
+            <li>
+              <Link href="https://www.experthubllc.com/home#contact" onClick={toggleMobileMenu}>
+              Contact
               </Link>
             </li>
             {/* Buttons in a flex row */}

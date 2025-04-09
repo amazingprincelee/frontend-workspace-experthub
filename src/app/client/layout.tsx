@@ -3,16 +3,13 @@
 import { ReactNode, useState, useEffect } from "react";
 import {
   FaTachometerAlt,
-  FaUsers,
   FaUserTie,
   FaBuilding,
-  FaPlusSquare,
   FaTimes,
   FaLifeRing,
-  FaBriefcase,
 } from "react-icons/fa";
+import { TiMessages } from "react-icons/ti";
 import { AiFillHome } from "react-icons/ai";
-import { IoMdAddCircle } from "react-icons/io";
 import Link from "next/link";
 import { IoExitOutline } from "react-icons/io5";
 
@@ -68,33 +65,28 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
               </Link>
             </li>
             <li className="p-4 hover:bg-gray-200">
-              <Link href="/client/experthub" className="flex items-center" onClick={closeSidebar}>
-                <FaBuilding className="mr-2 text-gray-600" />
-                <span>ExpertHub Workspaces</span>
+              <Link href="/client/provider" className="flex items-center" onClick={closeSidebar}>
+                <FaUserTie className="mr-2 text-gray-600" />
+                <span>Workspaces</span>
               </Link>
             </li>
             <li className="p-4 hover:bg-gray-200">
               <Link href="/client/provider" className="flex items-center" onClick={closeSidebar}>
                 <FaUserTie className="mr-2 text-gray-600" />
-                <span>Provider Workspaces</span>
+                <span>Event</span>
               </Link>
             </li>
+            
             <li className="p-4 hover:bg-gray-200">
-              <Link href="/client/subscriptions" className="flex items-center" onClick={closeSidebar}>
-                <FaBriefcase className="mr-2 text-gray-600" />
-                <span>My Subscription</span>
-              </Link>
-            </li>
-            <li className="p-4 hover:bg-gray-200">
-              <Link href="/client/wallet" className="flex items-center" onClick={closeSidebar}>
-                <FaPlusSquare className="mr-2 text-gray-600" />
-                <span>Wallet</span>
+              <Link href="/client/support" className="flex items-center" onClick={closeSidebar}>
+                <TiMessages className="mr-2 text-gray-600" />
+                <span>Support</span>
               </Link>
             </li>
             <li className="p-4 hover:bg-gray-200">
               <Link href="/client/support" className="flex items-center" onClick={closeSidebar}>
                 <FaLifeRing className="mr-2 text-gray-600" />
-                <span>Support</span>
+                <span>Calender</span>
               </Link>
             </li>
           </ul>
@@ -135,10 +127,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
               <FaUserTie size={24} className="text-gray-600" />
               <span className="text-xs">Providers</span>
             </Link>
-            <Link href="/client/wallet" className="flex flex-col items-center">
-              <FaPlusSquare size={24} className="text-gray-600" />
-              <span className="text-xs">Wallet</span>
-            </Link>
+            
             
           </nav>
         )}

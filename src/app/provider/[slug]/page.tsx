@@ -1,13 +1,16 @@
 import { useMemo } from "react";
 import CreateWorkspaceComponent from "@/components/create-workspace/CreateWorkspace";
+import ClientsComponent from '@/components/provider/provider-client';
+import ProviderWorkspaces from '@/components/provider/provider-workspaces'
 
 
 const Dashboard = () => <h1>Dashboard</h1>;
-const Clients = () => <h1>Clients</h1>;
-const Workspaces = () => <h1>My Workspaces</h1>;
+const Clients = () => <ClientsComponent />
+const Workspaces = () => <ProviderWorkspaces />;
 const Wallet = () => <h1>Wallet</h1>;
 const Support = () => <h1>Support</h1>;
 const CreateWorkspace = () => <CreateWorkspaceComponent />;
+
 
 
 

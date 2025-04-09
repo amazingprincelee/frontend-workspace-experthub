@@ -4,12 +4,11 @@ import { ReactNode, useState, useEffect } from "react";
 import {
   FaTachometerAlt,
   FaUsers,
-  FaUserTie,
   FaBuilding,
   FaPlusSquare,
   FaTimes,
-  FaLifeRing,
 } from "react-icons/fa";
+import { TiMessages } from "react-icons/ti";
 import { AiFillHome } from "react-icons/ai";
 import { IoMdAddCircle } from "react-icons/io";
 import Link from "next/link";
@@ -67,29 +66,25 @@ export default function ProviderLayout({ children }: ProviderLayoutProps) {
               </Link>
             </li>
             <li className="p-4 hover:bg-gray-200">
+              <Link href="/provider/workspaces" className="flex items-center" onClick={closeSidebar}>
+                <FaBuilding className="mr-2 text-gray-600" />
+                <span>Workspace</span>
+              </Link>
+            </li>
+            <li className="p-4 hover:bg-gray-200">
               <Link href="/provider/clients" className="flex items-center" onClick={closeSidebar}>
                 <FaUsers className="mr-2 text-gray-600" />
                 <span>Clients</span>
               </Link>
             </li>
             <li className="p-4 hover:bg-gray-200">
-              <Link href="/provider/createspace" className="flex items-center" onClick={closeSidebar}>
-                <FaPlusSquare className="mr-2 text-gray-600" />
-                <span>Create Workspace</span>
-              </Link>
-            </li>
-            <li className="p-4 hover:bg-gray-200">
-              <Link href="/provider/wallet" className="flex items-center" onClick={closeSidebar}>
-                <FaPlusSquare className="mr-2 text-gray-600" />
-                <span>Wallet</span>
-              </Link>
-            </li>
-            <li className="p-4 hover:bg-gray-200">
               <Link href="/provider/support" className="flex items-center" onClick={closeSidebar}>
-                <FaLifeRing className="mr-2 text-gray-600" />
-                <span>Support</span>
+                <TiMessages className="mr-2 text-gray-600" />
+                <span>Message</span>
               </Link>
             </li>
+            
+            
           </ul>
         </nav>
       </aside>

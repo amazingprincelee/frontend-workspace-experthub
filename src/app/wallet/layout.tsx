@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-export default function ProfileLayout({ children }: DashboardLayoutProps) {
+export default function WalletLayout({ children }: DashboardLayoutProps) {
   const { user } = useAuth();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);

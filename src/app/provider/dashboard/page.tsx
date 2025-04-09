@@ -6,8 +6,10 @@ import apiService from "@/utils/apiService";
 import { notification } from "antd";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { FaUsers, FaBuilding, FaChartLine, FaUserTie, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import Image from "next/image";
+import { FaUsers, FaBuilding, FaChartLine, FaUserTie } from "react-icons/fa";
+import { WorkspaceCard } from "@/components/WorkspaceCard";
+import { StatCard } from "@/components/StatCard";
+import { SectionContainer } from "@/components/SectionContainer";
 
 interface DashboardStats {
   totalWorkspaces: number;
@@ -130,7 +132,7 @@ const ProviderDashboard: React.FC = () => {
 
   return (
     <ProtectedRoute allowedRoles={["provider"]}>
-      <div className="container mx-auto px-4 sm:px-6 py-6 bg-background min-h-screen">
+      <div className="container mx-auto px-4 sm:px-6 py-6 bg-background min-h-screen ">
         {contextHolder}
 
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
@@ -148,13 +150,13 @@ const ProviderDashboard: React.FC = () => {
           />
           <StatCard 
             icon={<FaChartLine className="text-green-500 text-xl sm:text-2xl" />}
-            title="Total Subscriptions"
+            title="Running Subscriptions"
             value={stats?.totalSubscriptions || 0}
             bgColor="bg-green-100"
           />
           <StatCard 
             icon={<FaUserTie className="text-purple-500 text-xl sm:text-2xl" />}
-            title="Assigned Workspaces"
+            title="Workspaces Assigned To You"
             value={stats?.totalProviders || 0}
             bgColor="bg-purple-100"
           />
@@ -203,114 +205,6 @@ const ProviderDashboard: React.FC = () => {
         </SectionContainer>
       </div>
     </ProtectedRoute>
-  );
-};
-
-const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => (
-  <div className="bg-white rounded-lg shadow-sm border overflow-hidden h-full flex flex-col">
-    <div className="relative aspect-video">
-      <Image
-        src={workspace.thumbnail?.url || "/placeholder-workspace.jpg"}
-        alt={workspace.title}
-        fill
-        className="object-cover"
-      />
-    </div>
-    <div className="p-3 sm:p-4 flex-grow">
-      <div className="flex justify-between items-center mb-1">
-        <h3 className="text-base sm:text-lg font-heading font-semibold text-primary">
-          {workspace.title}
-        </h3>
-        {workspace.approved ? (
-          <FaCheckCircle className="text-green-500" title="Approved" />
-        ) : (
-          <FaTimesCircle className="text-red-500" title="Pending Approval" />
-        )}
-      </div>
-      <p className="text-xs sm:text-sm text-gray mb-1">
-        Provider: {workspace.providerName}
-      </p>
-      <p className="text-xs sm:text-sm text-gray mb-3">
-        {workspace.about?.substring(0, 50)}...
-      </p>
-      <div className="flex items-center space-x-2 mb-3">
-        <div className="flex -space-x-2">
-          {workspace.registeredClients.slice(0, 3).map((client) => (
-            <div
-              key={client._id}
-              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white overflow-hidden"
-            >
-              <Image
-                src={client.profilePicture || "/placeholder-user.jpg"}
-                alt="Client"
-                width={32}
-                height={32}
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
-        <p className="text-xs sm:text-sm text-gray">
-          Clients: {workspace.registeredClients.length}
-        </p>
-      </div>
-      <div className="flex items-center">
-        <div className="w-full bg-gray-200 rounded-full h-2 sm:h-2.5">
-          <div
-            className="bg-green-500 h-full rounded-full"
-            style={{ width: "75%" }} // This could be dynamic based on some metric
-          ></div>
-        </div>
-        <p className="text-xs sm:text-sm text-gray ml-2">75%</p>
-      </div>
-    </div>
-  </div>
-);
-
-const StatCard = ({ icon, title, value, bgColor }: { icon: React.ReactNode, title: string, value: number, bgColor: string }) => (
-  <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border flex items-center space-x-3">
-    <div className={`p-2 sm:p-3 ${bgColor} rounded-full`}>
-      {icon}
-    </div>
-    <div>
-      <h3 className="text-xs sm:text-sm font-heading text-gray">{title}</h3>
-      <p className="text-lg sm:text-xl md:text-2xl font-bold font-heading text-primary">{value}</p>
-    </div>
-  </div>
-);
-
-const SectionContainer = ({ 
-  title, 
-  viewAllLink, 
-  children, 
-  isEmpty, 
-  emptyMessage 
-}: { 
-  title: string, 
-  viewAllLink: string, 
-  children: React.ReactNode, 
-  isEmpty: boolean, 
-  emptyMessage: string 
-}) => {
-  const router = useRouter();
-  
-  return (
-    <div className="mb-8 sm:mb-10">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg sm:text-xl font-heading font-bold text-primary">{title}</h2>
-        <button
-          onClick={() => router.push(viewAllLink)}
-          className="text-primary font-heading font-semibold hover:underline text-sm sm:text-base"
-        >
-          View All
-        </button>
-      </div>
-      {isEmpty ? (
-        <p className="text-gray text-center py-4">{emptyMessage}</p>
-      ) : (
-        children
-      )}
-    </div>
   );
 };
 

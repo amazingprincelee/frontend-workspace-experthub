@@ -137,8 +137,10 @@ const AuthHeaderNav = ({ setToggle }: { setToggle?: () => void }) => {
   // Profile dropdown items
   const profileItems: MenuProps["items"] = [
     { key: "1", label: <Link href="/profile">Profile</Link> },
+    { key: "2", label: <Link href="/wallet">Wallet</Link> },
+    { key: "3", label: <Link href="/yourplan">Your Plan</Link> },
     {
-      key: "2",
+      key: "4",
       label: (
         <button
           onClick={handleLogout}
