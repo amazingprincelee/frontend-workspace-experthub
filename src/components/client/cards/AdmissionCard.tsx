@@ -8,7 +8,7 @@ import AssignCourse from '../modals/AssignCourse';
 import SendAssesment from '../modals/SendAssesment';
 import { notification } from 'antd';
 import Notice from '../modals/Notice';
-import { useAppSelector } from '@/store/hooks';
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from 'next/navigation';
 import apiService from '@/utils/apiService';
 import AppointmentModal from '../modals/AppointmentModal';
@@ -26,7 +26,7 @@ const AdmissionCard = ({ tutor, role, setShowPremium }: { tutor: any, role: stri
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("We hope this message finds you well.")
   const router = useRouter()
-  const user = useAppSelector((state) => state.value);
+  const { user } = useAuth();
   const [appointment, setAppointment] = useState(false)
 
   const [userProfile, setUser] = useState<UserType>();

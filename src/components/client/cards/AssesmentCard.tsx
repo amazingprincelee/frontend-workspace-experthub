@@ -1,4 +1,4 @@
-import { useAppSelector } from '@/store/hooks';
+import { useAuth } from "@/context/AuthContext";
 import apiService from '@/utils/apiService';
 import { isActionChecked } from '@/utils/checkPrivilege';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import React from 'react';
 
 const AssesmentCard = ({ assesment, getAssesment }: { assesment: any, getAssesment?: any }) => {
   const pathname = usePathname()
-  const user = useAppSelector((state) => state.value);
+  const { user } = useAuth();
   const router = useRouter()
 
   const deleteAssesment = () => {
