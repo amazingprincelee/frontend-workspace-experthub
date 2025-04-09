@@ -1,8 +1,5 @@
 "use client"
 
-
-import FooterNav from "@/components/FooterNav";
-import HeaderNav from "@/components/HeaderNav";
 import Hero from "@/components/hero/hero";
 import Advantages from "@/components/advantage-component/advantage";
 import WorkspaceSlider from "@/components/workspace/workspace-slider";

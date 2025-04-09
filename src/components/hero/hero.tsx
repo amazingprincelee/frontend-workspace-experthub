@@ -3,26 +3,28 @@ import Link from "next/link";
 const Hero: React.FC = () => {
   return (
     <div
-      className="relative min-h-[120vh] bg-cover bg-center flex flex-col justify-end items-center"
+      className="relative min-h-[80vh] bg-cover bg-center flex items-center justify-center"
       style={{
-        backgroundImage: "url('/images/hero-bg2.png')", 
+        backgroundImage: "url('/images/hero-bg2.png')",
       }}
     >
-     
-      <div
-        className="relative z-10  h-full text-center text-white px-4" >
-        <div className="mb-24 ">
-          <h1 className="text-4xl md:text-7xl font-bold font-heading">
-            Discover Your <span className="text-secondary">Perfect</span> Workspace.
+      {/* Dark Overlay for Text Visibility */}
+      <div className="absolute inset-0 bg-black/60 z-0"></div>
+
+      {/* Hero Content */}
+      <div className="relative z-10 text-center text-white px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold font-heading leading-tight">
+            Discover Your <span className="text-secondary">Perfect</span> Workspace
           </h1>
-          <h1 className="mt-4 text-4xl md:text-7xl font-bold font-heading">
+          <h1 className="mt-2 text-4xl md:text-6xl font-bold font-heading leading-tight">
             Maximize <span className="text-secondary">Productivity</span>
           </h1>
-          <p className="mt-4 text-lg  md:text-xl font-sans ">
-            Choose to work online with your team or any <br/> of the physical locations close to you.
+          <p className="mt-4 text-lg md:text-xl font-sans max-w-xl mx-auto">
+            Choose to work online with your team or any of the physical locations close to you.
           </p>
           <Link href="/auth/signup">
-            <button className="mt-11 px-14 py-3 bg-secondary text-white font-semibold text-lg rounded-full hover:bg-yellow-600 transition">
+            <button className="mt-8 px-10 py-3 bg-secondary text-white font-semibold text-lg rounded-full hover:bg-yellow-600 transition">
               Register
             </button>
           </Link>
