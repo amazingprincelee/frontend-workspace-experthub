@@ -4,10 +4,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Dropdown, Spin } from 'antd';
 import { usePathname } from 'next/navigation';
-import AssignCourse from '../modals/AssignCourse';
-import SendAssesment from '../modals/SendAssesment';
 import { notification } from 'antd';
-import Notice from '../modals/Notice';
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from 'next/navigation';
 import apiService from '@/utils/apiService';
@@ -240,9 +237,7 @@ const AdmissionCard = ({ tutor, role, setShowPremium }: { tutor: any, role: stri
           </Dropdown>
         </div>}
       </div>
-      <AssignCourse open={assign} handleClick={() => setAssign(false)} studentId={tutor.studentId || tutor.id} />
-      <SendAssesment open={assesment} handleClick={() => setAssesment(false)} studentId={tutor.studentId} />
-      <Notice open={notice} handleClick={() => setNotice(false)} recipient={tutor.studentId || tutor.id} />
+      
       <AppointmentModal open={appointment} handleClick={() => setAppointment(false)} to={tutor.studentId || tutor.id} />
       {email && <div>
         {contextHolder}

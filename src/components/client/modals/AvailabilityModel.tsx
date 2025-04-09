@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { notification } from 'antd';
-import { useAppSelector } from '@/store/hooks';
+import { useAuth } from "@/context/AuthContext";
 import apiService from '@/utils/apiService';
 
 const Availability = ({ open, handleClick }: { open: boolean, handleClick: any }) => {
   const [steps, setSteps] = useState(0)
   const [api, contextHolder] = notification.useNotification();
-  const user = useAppSelector((state) => state.value);
+   const { user } = useAuth();
   const [loading, setLoading] = useState(false)
   const [location, setLocation] = useState('')
   const [room, setRoom] = useState('')
