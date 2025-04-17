@@ -1,4 +1,4 @@
-import { CategoryType } from '@/types/CourseType';
+import { CategoryType } from '@/types/WorkspaceType';
 import apiService from '@/utils/apiService';
 import { notification } from 'antd';
 import React, { useEffect, useState } from 'react';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CourseDetails from '../modals/CourseDetails';
-import { CourseType } from '@/types/CourseType';
+import { WorkspaceType } from '@/types/WorkspaceType';
 import Link from 'next/link';
 import ImageViewer from '@/components/ImageViewer';
 import AppointmentModal from '../modals/AppointmentModal';
@@ -12,7 +12,7 @@ import PaymentModal from '../modals/PaymentModal'
 import { notification } from 'antd';
 import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
 
-const ApplicantCourses = ({ course }: { course: CourseType }) => {
+const ApplicantCourses = ({ course }: { course: WorkspaceType }) => {
   const [open, setOpen] = useState(false)
   const [appointment, setAppointment] = useState(false)
   const router = useRouter()
@@ -51,11 +51,11 @@ const ApplicantCourses = ({ course }: { course: CourseType }) => {
   }
 
   const renew = () => {
-    apiService.get(`courses/renew/${course._id}/${user.id}`)
+    apiService.get(`workspace/renew/${course._id}/${user.id}`)
       .then(function (response) {
         console.log(response.data)
         api.open({
-          message: "Course Renewed Successfully!"
+          message: "Workspace Renewed Successfully!"
         });
         setTimeout(() => {
           router.refresh();

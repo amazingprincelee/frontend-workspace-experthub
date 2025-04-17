@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { CourseType } from '@/types/CourseType';
+import { CourseType } from '@/types/WorkspaceType';
 import React from 'react';
 import {
   FacebookShareButton,

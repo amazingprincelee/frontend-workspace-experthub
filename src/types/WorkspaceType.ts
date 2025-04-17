@@ -1,4 +1,4 @@
-export interface CourseType {
+export interface WorkspaceType {
   _id: string;
   title: string;
   thumbnail: ThumbnailType | string;

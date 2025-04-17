@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { notification } from 'antd';
-import { CategoryType } from '@/types/CourseType';
+import { CategoryType } from '@/types/WorkspaceType';
 import apiService from '@/utils/apiService';
 
 const CategoryModal = ({ open, fetch, handleClick, category }: { open: boolean, fetch?: any, handleClick: any, category: CategoryType | null }) => {

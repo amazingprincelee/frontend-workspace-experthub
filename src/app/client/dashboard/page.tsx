@@ -5,18 +5,18 @@ import RecommendedCard from "@/components/client/cards/RecommendedCard";
 import StatCard from "@/components/client/cards/StatCard";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { CourseType } from "@/types/CourseType";
+import { WorkspaceType } from "@/types/WorkspaceType";
 import { AssesmentType } from "@/types/AssesmentType";
 import Link from "next/link";
 import apiService from "@/utils/apiService";
 import AddCourseInterests from "@/components/client/modals/AddCourseInterests";
 
 const ClientDashboard = () => {
-  const { user, loading: authLoading } = useAuth(); // Add authLoading from useAuth
-  const [recommended, setRecommended] = useState<CourseType | []>([]);
-  const [courses, setCourses] = useState<CourseType[]>([]);
+  const { user, loading: authLoading } = useAuth(); 
+  const [recommended, setRecommended] = useState<WorkspaceType | []>([]);
+  const [workspaces, setWorkspaces] = useState<WorkspaceType[]>([]);
   const [view, setView] = useState(3);
-  const [instructors, setInstructors] = useState([]);
+  const [provider, setprovider] = useState([]);
   const [active, setActive] = useState("");
   const [assessments, setAssessment] = useState<AssesmentType | []>([]);
   const [open, setOpen] = useState(false);
@@ -34,49 +34,58 @@ const ClientDashboard = () => {
 
   const getRecommended = async () => {
     await apiService
-      .get(`courses/recommended-courses/${user?.id}`)
+      .get(`workspace/recommended`)
       .then(function (response) {
-        setRecommended(response.data.courses);
+      
+        console.log("recommeded workspace fetched", response.data.workspace );
+        
+        
+       setRecommended(response.data.workspace);
       })
       .catch((e) => {
         setRecommended([]);
       });
   };
 
-  const getCourses = async () => {
+
+  const getWorkspaces = async () => {
     await apiService
-      .get(`courses/enrolled-courses/${user?.id}`)
+      .get(`workspace/enrolled-workspaces/${user?.id}`)
       .then(function (response) {
-        setCourses(response.data.enrolledCourses);
-        console.log(response.data.enrolledCourses);
+        setWorkspaces(response.data.enrolledWorkspaces);
+        console.log(response.data.enrolledWorkspaces);
       })
       .catch((e) => {
-        setCourses([]);
+        setWorkspaces([]);
       });
   };
 
-  const getTutors = () => {
+ 
+
+  const getProvider = () => {
+    if (!user?._id) return;
+  
     apiService
-      .put("user/myinstructors", {
-        course: user?.assignedCourse,
+      .get(`myproviders/${user._id}`)
+      .then((response) => {
+        setprovider(response.data.providers); 
       })
-      .then(function (response) {
-        setInstructors(response.data.instructors);
-      })
-      .catch((e) => {
-        setInstructors([]);
+      .catch((error) => {
+        console.error("Error fetching providers:", error);
+        setprovider([]); 
       });
   };
+  
 
   useEffect(() => {
-    if (!user || authLoading) return; // Wait for user to be loaded
+    if (!user || authLoading) return; 
     getRecommended();
-    getCourses();
-    getTutors();
+    getWorkspaces();
+    getProvider();
     getAssessment();
   }, [user, authLoading]);
 
-  // Show a loading state while user data is being fetched
+  
   if (authLoading || !user) {
     return <div className="text-center p-6">Loading...</div>;
   }
@@ -84,10 +93,10 @@ const ClientDashboard = () => {
   return (
     <div>
       <section className="p-4 lg:flex hidden justify-between">
-        <StatCard title="Total No of Workspaces" count={courses.length} bg="#27C2D6" img="clock-line" />
+        <StatCard title="Total No of Workspaces" count={workspaces.length} bg="#27C2D6" img="clock-line" />
         <StatCard title="Assessments" count={assessments.length} bg="#DC9F08" img="ic_outline-assessment" />
         <StatCard title="Progress" count={"0%"} bg="#53C48C" img="game-icons_progression" />
-        <StatCard title="Workspace Providers" count={instructors.length} bg="#7E34C9" img="ph_chalkboard-teacher" />
+        <StatCard title="Workspace Providers" count={provider.length} bg="#7E34C9" img="ph_chalkboard-teacher" />
       </section>
       <section className="m-3 p-3 rounded-md shadow-[0px_2px_4px_0px_#1E1E1E21]">
         <div className="text-sm flex justify-between">
@@ -133,17 +142,17 @@ const ClientDashboard = () => {
             </div>
           </div>
           <p
-            onClick={() => setView(view === 3 ? courses.length : 3)}
+            onClick={() => setView(view === 3 ? workspaces.length : 3)}
             className="text-[#DC9F08] cursor-pointer mt-auto"
           >
             VIEW {view === 3 ? "ALL" : "LESS"}
           </p>
         </div>
         <div className="flex flex-wrap justify-between">
-          {courses
+          {workspaces
             .slice(0, view)
-            .filter((course: CourseType) => course.category === active || active === "")
-            .map((course: CourseType) => (
+            .filter((course: WorkspaceType) => course.category === active || active === "")
+            .map((course: WorkspaceType) => (
               <ApplicantCourses key={course._id} course={course} />
             ))}
         </div>
@@ -170,9 +179,9 @@ const ClientDashboard = () => {
             <div>No recommended workspaces</div>
           ) : (
             recommended
-              .filter((course: CourseType) => course.category === active || active === "")
-              .map((course: any) => (
-                <RecommendedCard key={course._id} course={course} call={() => getCourses()} />
+              .filter((workspace: WorkspaceType) => workspace.category === active || active === "")
+              .map((workspace: any) => (
+                <RecommendedCard key={workspace._id} workspace={workspace} call={() => getWorkspaces()} />
               ))
           )}
         </div>
