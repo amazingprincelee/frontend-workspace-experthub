@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { CourseType } from '@/types/WorkspaceType';
+import { WorkspaceType } from '@/types/WorkspaceType';
 import React from 'react';
 import {
   FacebookShareButton,
@@ -15,7 +15,7 @@ import {
   LinkedinIcon
 } from 'react-share'
 
-const ShareModal = ({ open, handleClick, course }: { open: boolean, handleClick: any, course: CourseType }) => {
+const ShareModal = ({ open, handleClick, workspace }: { open: boolean, handleClick: any, workspace: WorkspaceType }) => {
   const { user } = useAuth();
 
   return (
@@ -29,7 +29,7 @@ const ShareModal = ({ open, handleClick, course }: { open: boolean, handleClick:
         <div className='lg:p-10 p-4'>
           <p>Share course to friends or family to make purchase for you!</p>
           <div className='my-2'>
-            <FacebookShareButton url={`https://trainings.experthubllc.com/${course._id}?user=${user.id}`}>
+            <FacebookShareButton url={`https://trainings.experthubllc.com/${workspace._id}?user=${user.id}`}>
               <button className='flex bg-transparent'>
                 <FacebookIcon round size={26} />
                 <p className='ml-3'>Share on Facebook</p>
@@ -38,7 +38,7 @@ const ShareModal = ({ open, handleClick, course }: { open: boolean, handleClick:
           </div>
 
           <div className='my-2'>
-            <WhatsappShareButton url={`https://trainings.experthubllc.com/${course._id}?user=${user.id}`}>
+            <WhatsappShareButton url={`https://trainings.experthubllc.com/${workspace._id}?user=${user.id}`}>
               <button className='flex bg-transparent'>
                 <WhatsappIcon round size={26} />
                 <p className='ml-3'>Share on WhatsApp</p>
@@ -47,7 +47,7 @@ const ShareModal = ({ open, handleClick, course }: { open: boolean, handleClick:
           </div>
 
           <div className='my-2'>
-            <LinkedinShareButton url={`https://trainings.experthubllc.com/${course._id}?user=${user.id}`}>
+            <LinkedinShareButton url={`https://trainings.experthubllc.com/${workspace._id}?user=${user.id}`}>
               <button className='flex bg-transparent'>
                 <LinkedinIcon round size={26} />
                 <p className='ml-3'>Share on LinkedIn</p>
@@ -56,7 +56,7 @@ const ShareModal = ({ open, handleClick, course }: { open: boolean, handleClick:
           </div>
 
           <div className='my-2'>
-            <EmailShareButton url={`https://trainings.experthubllc.com/${course._id}?user=${user.id}`}>
+            <EmailShareButton url={`https://trainings.experthubllc.com/${workspace._id}?user=${user.id}`}>
               <button className='flex bg-transparent'>
                 <EmailIcon round size={26} /> <p className='ml-3'> Share via Email</p>
               </button>

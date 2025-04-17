@@ -65,7 +65,7 @@ const RecommendedCard = ({ workspace, call }: { workspace: WorkspaceType, call: 
         }} className='p-2 w-full bg-primary rounded-sm my-1'>Enquire</button>
         <button onClick={() => setShare(true)} className='p-2 w-full bg-primary rounded-sm my-1'>Share</button>
       </div>
-      <ShareModal open={share} course={workspace} handleClick={() => setShare(false)} />
+      <ShareModal open={share} workspace={workspace} handleClick={() => setShare(false)} />
       <AppointmentModal open={appointment} handleClick={() => setAppointment(false)} to={workspace.instructorId} />
       <CourseDetails course={workspace} open={open} action={"Course"} type='enroll' call={call} handleClick={() => setOpen(false)} />
     </div>
