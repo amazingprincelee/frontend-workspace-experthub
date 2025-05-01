@@ -96,42 +96,42 @@ const AuthHeaderNav = ({ setToggle }: { setToggle?: () => void }) => {
   // Notification dropdown items
   const notificationItems: MenuProps["items"] = notifications.length
     ? notifications.map((notif, index) => ({
-        key: index,
-        label: (
-          <div>
-            <p className="font-medium">{notif.title}</p>
-            <p>{notif.body}</p>
-            {!notif.read && (
-              <button
-                onClick={async () => {
-                  try {
-                    await apiService.get(
-                      `/notifications/mark-as-read/${notif._id}`,
-                      {
-                        headers: {
-                          Authorization: `Bearer ${localStorage.getItem(
-                            "token"
-                          )}`,
-                        },
-                      }
-                    );
-                    setNotifications((prev) =>
-                      prev.map((n) =>
-                        n._id === notif._id ? { ...n, read: true } : n
-                      )
-                    );
-                  } catch (error) {
-                    console.error("Failed to mark as read:", error);
-                  }
-                }}
-                className="text-blue-500"
-              >
-                Mark as Read
-              </button>
-            )}
-          </div>
-        ),
-      }))
+      key: index,
+      label: (
+        <div>
+          <p className="font-medium">{notif.title}</p>
+          <p>{notif.body}</p>
+          {!notif.read && (
+            <button
+              onClick={async () => {
+                try {
+                  await apiService.get(
+                    `/notifications/mark-as-read/${notif._id}`,
+                    {
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                          "token"
+                        )}`,
+                      },
+                    }
+                  );
+                  setNotifications((prev) =>
+                    prev.map((n) =>
+                      n._id === notif._id ? { ...n, read: true } : n
+                    )
+                  );
+                } catch (error) {
+                  console.error("Failed to mark as read:", error);
+                }
+              }}
+              className="text-blue-500"
+            >
+              Mark as Read
+            </button>
+          )}
+        </div>
+      ),
+    }))
     : [{ key: "0", label: "No notifications" }];
 
   // Profile dropdown items
@@ -180,9 +180,8 @@ const AuthHeaderNav = ({ setToggle }: { setToggle?: () => void }) => {
 
         {/* Center Section: Navigation Links */}
         <nav
-          className={`${
-            isMenuOpen ? "block" : "hidden"
-          } lg:flex flex-1 justify-center absolute lg:static top-16 left-0 w-full bg-[#F8F7F4] lg:bg-transparent shadow-lg lg:shadow-none z-40`}
+          className={`${isMenuOpen ? "block" : "hidden"
+            } lg:flex flex-1 justify-center absolute lg:static top-16 left-0 w-full bg-[#F8F7F4] lg:bg-transparent shadow-lg lg:shadow-none z-40`}
         >
           <ul className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-8 p-4 lg:p-0">
             <li>
@@ -283,7 +282,9 @@ const AuthHeaderNav = ({ setToggle }: { setToggle?: () => void }) => {
                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 0 1 1.99 0C11.28 1.56 13 3.58 13 6c0 .88.32 4.2 1.22 6z" />
               </svg>
               {notifications.some((n) => !n.read) && (
-                <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full"></span>
+                <span className="absolute top-0 right-0 min-h-4 min-w-4 px-1 bg-red-500 text-xs text-white rounded-full flex items-center justify-center">
+                  {notifications.filter((n) => !n.read).length}
+                </span>
               )}
             </button>
           </Dropdown>

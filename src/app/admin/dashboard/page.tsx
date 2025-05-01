@@ -267,7 +267,7 @@ const AdminDashboard: React.FC = () => {
         </SectionContainer>
 
         {/* Recommended Workspaces Section */}
-        <SectionContainer
+        {/* <SectionContainer
           title="Recommended for You"
           viewAllLink="/admin/workspaces"
           isEmpty={recommendedWorkspaces.length === 0}
@@ -282,7 +282,8 @@ const AdminDashboard: React.FC = () => {
               />
             ))}
           </div>
-        </SectionContainer>
+        </SectionContainer> */}
+        
         <SectionContainer
           title="Pending Approval Workspaces"
           viewAllLink="/admin/workspace/unapproved"
