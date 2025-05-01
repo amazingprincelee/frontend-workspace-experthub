@@ -32,6 +32,7 @@ const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [allWorkspaces, setAllWorkspaces] = useState<Workspace[]>([]);
   const [recommendedWorkspaces, setRecommendedWorkspaces] = useState<Workspace[]>([]);
+  const [unapprovedWorkspaces, setUnapprovedWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [error, setError] = useState<string | null>(null); // State to hold error messages
@@ -77,7 +78,7 @@ const AdminDashboard: React.FC = () => {
     try {
       const response = await apiService.get(`/workspace/recommended`);
       console.log("Recommended Workspace Response:", response);
-  
+
       // Since the backend returns a single workspace, we wrap it in an array for consistency with the UI
       const workspace = response.data.workspace;
       const workspaceData: Workspace = {
@@ -95,6 +96,55 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const fetchUnaprovedWorkspaces = async () => {
+    try {
+      const response = await apiService.get(`/workspace/creator/${user.id}`);
+      console.log('Raw API response:', response.data);
+
+      // Check if the response has the expected structure
+      if (!response.data.approvedWorkspaces || !response.data.unapprovedWorkspaces) {
+        console.log('Invalid response structure');
+        setUnapprovedWorkspaces([]);
+        return;
+      }
+
+      // Map approved workspaces
+      // const approved: Workspace[] = response.data.approvedWorkspaces.map((workspace: any) => ({
+      //   _id: workspace._id,
+      //   title: workspace.title || "Untitled Workspace",
+      //   providerName: workspace.providerName || "Unknown Provider",
+      //   about: workspace.about || "No description available",
+      //   thumbnail: workspace.thumbnail || { url: "/placeholder-workspace.jpg" },
+      //   registeredClients: workspace.registeredClients || [],
+      //   startDate: workspace.startDate || new Date().toISOString(),
+      //   approved: workspace.approved !== undefined ? workspace.approved : true, // Should always be true
+      // }));
+
+      // Map unapproved workspaces
+      const unapproved: Workspace[] = response.data.unapprovedWorkspaces.map((workspace: any) => ({
+        _id: workspace._id,
+        title: workspace.title || "Untitled Workspace",
+        providerName: workspace.providerName || "Unknown Provider",
+        about: workspace.about || "No description available",
+        thumbnail: workspace.thumbnail || { url: "/placeholder-workspace.jpg" },
+        registeredClients: workspace.registeredClients || [],
+        startDate: workspace.startDate || new Date().toISOString(),
+        approved: workspace.approved !== undefined ? workspace.approved : false, // Should always be false
+      }));
+
+      console.log('Processed unapproved workspaces:', unapproved);
+
+      setUnapprovedWorkspaces(unapproved);
+
+      if (unapproved.length === 0) {
+        console.log('No unapproved workspaces found, but approved workspaces exist');
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.message || error.message);
+      console.error('Fetch error:', error);
+    }
+  };
+
   // Load data when user is available
   useEffect(() => {
     if (!user || authLoading) return;
@@ -104,6 +154,7 @@ const AdminDashboard: React.FC = () => {
         fetchDashboardStats(),
         fetchAllWorkspaces(),
         fetchRecommendedWorkspaces(),
+        fetchUnaprovedWorkspaces()
       ]);
       setLoading(false);
     };
@@ -138,28 +189,28 @@ const AdminDashboard: React.FC = () => {
     <ProtectedRoute allowedRoles={["admin"]}>
       <div className="container mx-auto px-4 sm:px-6 py-6 bg-background min-h-screen">
         {contextHolder}
-        
+
         {/* Statistics Section */}
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-          <StatCard 
+          <StatCard
             icon={<FaBuilding className="text-blue-500 text-xl sm:text-2xl" />}
             title="Total No of Workspaces"
             value={stats?.totalWorkspaces || 0}
             bgColor="bg-blue-100"
           />
-          <StatCard 
+          <StatCard
             icon={<FaUsers className="text-yellow-500 text-xl sm:text-2xl" />}
             title="Total No of Clients"
             value={stats?.totalClients || 0}
             bgColor="bg-yellow-100"
           />
-          <StatCard 
+          <StatCard
             icon={<FaChartLine className="text-green-500 text-xl sm:text-2xl" />}
             title="Total No of Subscription"
             value={stats?.totalSubscriptions || 0}
             bgColor="bg-green-100"
           />
-          <StatCard 
+          <StatCard
             icon={<FaUserTie className="text-purple-500 text-xl sm:text-2xl" />}
             title="Workspace Providers"
             value={stats?.totalProviders || 0}
@@ -178,8 +229,8 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* All Workspaces Section */}
-        <SectionContainer 
-          title="All Workspaces" 
+        <SectionContainer
+          title="All Workspaces"
           viewAllLink="/admin/workspaces"
           isEmpty={allWorkspaces.length === 0}
           emptyMessage="No workspaces found"
@@ -189,9 +240,8 @@ const AdminDashboard: React.FC = () => {
               {allWorkspaces.map((workspace, index) => (
                 <div
                   key={workspace._id}
-                  className={`flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 transition-transform duration-300 ${
-                    index === currentIndex ? "block" : "hidden sm:block"
-                  }`}
+                  className={`flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 transition-transform duration-300 ${index === currentIndex ? "block" : "hidden sm:block"
+                    }`}
                 >
                   <WorkspaceCard workspace={workspace} />
                 </div>
@@ -217,19 +267,31 @@ const AdminDashboard: React.FC = () => {
         </SectionContainer>
 
         {/* Recommended Workspaces Section */}
-        <SectionContainer 
-          title="Recommended for You" 
+        <SectionContainer
+          title="Recommended for You"
           viewAllLink="/admin/workspaces"
           isEmpty={recommendedWorkspaces.length === 0}
           emptyMessage="No recommended workspaces found"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {recommendedWorkspaces.map((workspace) => (
-              <RecommendedWorkspaceCard 
-                key={workspace._id} 
-                workspace={workspace} 
+              <RecommendedWorkspaceCard
+                key={workspace._id}
+                workspace={workspace}
                 onClick={() => router.push(`/workspace/${workspace._id}`)}
               />
+            ))}
+          </div>
+        </SectionContainer>
+        <SectionContainer
+          title="Pending Approval Workspaces"
+          viewAllLink="/admin/workspace/unapproved"
+          isEmpty={unapprovedWorkspaces.length === 0}
+          emptyMessage="No workspaces pending approval"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {unapprovedWorkspaces.slice(0, 4).map((workspace) => (
+              <WorkspaceCard key={workspace._id} workspace={workspace} />
             ))}
           </div>
         </SectionContainer>
@@ -252,21 +314,21 @@ const StatCard = ({ icon, title, value, bgColor }: { icon: React.ReactNode, titl
 );
 
 // Reusable Section Container Component
-const SectionContainer = ({ 
-  title, 
-  viewAllLink, 
-  children, 
-  isEmpty, 
-  emptyMessage 
-}: { 
-  title: string, 
-  viewAllLink: string, 
-  children: React.ReactNode, 
-  isEmpty: boolean, 
-  emptyMessage: string 
+const SectionContainer = ({
+  title,
+  viewAllLink,
+  children,
+  isEmpty,
+  emptyMessage
+}: {
+  title: string,
+  viewAllLink: string,
+  children: React.ReactNode,
+  isEmpty: boolean,
+  emptyMessage: string
 }) => {
   const router = useRouter();
-  
+
   return (
     <div className="mb-8 sm:mb-10">
       <div className="flex justify-between items-center mb-4">
@@ -367,7 +429,7 @@ const RecommendedWorkspaceCard = ({ workspace, onClick }: { workspace: Workspace
           year: "numeric",
         })}
       </p>
-      
+
     </div>
   </div>
 );

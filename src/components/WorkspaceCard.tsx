@@ -34,10 +34,10 @@ export const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => (
           <FaTimesCircle className="text-red-500" title="Pending Approval" />
         )}
       </div>
-      <p className="text-xs sm:text-sm text-gray mb-1">
+      <p className="text-xs sm:text-sm mb-1">
         Provider: {workspace.providerName}
       </p>
-      <p className="text-xs sm:text-sm text-gray mb-3">
+      <p className="text-xs sm:text-sm mb-3">
         {workspace.about?.substring(0, 50)}...
       </p>
       <div className="flex items-center space-x-2 mb-3">
@@ -57,7 +57,7 @@ export const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => (
             </div>
           ))}
         </div>
-        <p className="text-xs sm:text-sm text-gray">
+        <p className="text-xs sm:text-sm">
           Clients: {workspace.registeredClients.length}
         </p>
       </div>

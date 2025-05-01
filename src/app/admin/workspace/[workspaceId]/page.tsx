@@ -28,7 +28,7 @@ const AdminWorkspaceDetails = () => {
     const fetchWorkspace = async () => {
       setIsLoading(true);
       try {
-        const response = await apiService.get(`/workspace/${workspaceId}?userId=${user.id}`, {
+        const response = await apiService.get(`/workspace/${workspaceId}?adminId=${user.id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -38,7 +38,7 @@ const AdminWorkspaceDetails = () => {
       } catch (error) {
         console.error("Error fetching workspace:", error);
         message.error("Failed to fetch workspace details");
-        router.push("/admin/workspaces");
+        // router.push("/admin/workspaces");
       } finally {
         setIsLoading(false);
       }
