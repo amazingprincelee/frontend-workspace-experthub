@@ -10,6 +10,7 @@ import {
   FaPlusSquare,
   FaStar,
   FaTimes,
+  FaCalendar
 } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import { IoMdAddCircle } from "react-icons/io";
@@ -92,6 +93,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </Link>
             </li>
             <li className="p-4 hover:bg-gray-200">
+              <Link href="/admin/calendar" className="flex items-center" onClick={closeSidebar}>
+                <FaCalendar className="mr-2 text-gray-600" />
+                <span>Calender</span>
+              </Link>
+            </li>
+            <li className="p-4 hover:bg-gray-200">
               <Link href="/admin/addcategory" className="flex items-center" onClick={closeSidebar}>
                 <FaCalendarCheck className="mr-2 text-gray-600" />
                 <span>Add Category</span>
@@ -144,6 +151,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Link href="/admin/clients" className="flex flex-col items-center">
               <FaUsers size={24} className="text-gray-600" />
               <span className="text-xs">Client</span>
+            </Link>
+            <Link href="/admin/calendar" className="flex flex-col items-center">
+              <FaCalendar size={24} className="text-gray-600" />
+              <span className="text-xs">Calender</span>
             </Link>
           </nav>
         )}

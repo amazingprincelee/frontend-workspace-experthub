@@ -3,6 +3,7 @@ import { notification } from 'antd';
 import { useAuth } from "@/context/AuthContext";
 import apiService from '@/utils/apiService';
 import { useRouter } from "next/navigation";
+import { format } from 'date-fns';
 
 const dayMapping = {
   "Sunday": 0,
@@ -14,7 +15,13 @@ const dayMapping = {
   "Saturday": 6,
 };
 
-const AppointmentModal = ({ open, handleClick, to, data }: { open: boolean, handleClick: any, to?: any, data?: any }) => {
+const AppointmentModal = ({ open, handleClick, to, data, selectedDate }: { 
+  open: boolean, 
+  handleClick: any, 
+  to?: any, 
+  data?: any,
+  selectedDate?: Date 
+}) => {
   const [steps, setSteps] = useState(0)
   const [location, setLocation] = useState(data?.location || '')
   const [room, setRoom] = useState(data?.room || '')
@@ -105,11 +112,16 @@ const AppointmentModal = ({ open, handleClick, to, data }: { open: boolean, hand
   };
 
   useEffect(() => {
-    if (to) {
-      getTo()
+    if (selectedDate) {
+      setDate(format(selectedDate, 'yyyy-MM-dd'));
+      // Set a default time or leave it for user selection
+      setTime(format(selectedDate, 'HH:mm'));
     }
-  }, [])
+  }, [selectedDate]);
 
+  if (to) {
+    getTo()
+  }
   const editAppointment = () => {
     setLoading(true)
     apiService.put(`/appointment/edit-appointment/${data._id}`, {

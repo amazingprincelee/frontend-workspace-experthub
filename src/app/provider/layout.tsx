@@ -7,6 +7,8 @@ import {
   FaBuilding,
   FaPlusSquare,
   FaTimes,
+  FaCalendar,
+  FaUserFriends,
 } from "react-icons/fa";
 import { TiMessages } from "react-icons/ti";
 import { AiFillHome } from "react-icons/ai";
@@ -78,6 +80,18 @@ export default function ProviderLayout({ children }: ProviderLayoutProps) {
               </Link>
             </li>
             <li className="p-4 hover:bg-gray-200">
+              <Link href="/provider/team" className="flex items-center" onClick={closeSidebar}>
+                <FaUserFriends className="mr-2 text-gray-600" />
+                <span>Team</span>
+              </Link>
+            </li>
+            <li className="p-4 hover:bg-gray-200">
+              <Link href="/provider/calendar" className="flex items-center" onClick={closeSidebar}>
+                <FaCalendar className="mr-2 text-gray-600" />
+                <span>Calendar</span>
+              </Link>
+            </li>
+            <li className="p-4 hover:bg-gray-200">
               <Link href="/provider/support" className="flex items-center" onClick={closeSidebar}>
                 <TiMessages className="mr-2 text-gray-600" />
                 <span>Message</span>
@@ -122,6 +136,14 @@ export default function ProviderLayout({ children }: ProviderLayoutProps) {
             <Link href="/provider/clients" className="flex flex-col items-center">
               <FaUsers size={24} className="text-gray-600" />
               <span className="text-xs">Client</span>
+            </Link>
+            <Link href="/provider/team" className="flex flex-col items-center">
+              <FaUserFriends size={24} className="text-gray-600" />
+              <span className="text-xs">Team</span>
+            </Link>
+            <Link href="/provider/calendar" className="flex flex-col items-center">
+              <FaCalendar size={24} className="text-gray-600" />
+              <span className="text-xs">Calendar</span>
             </Link>
             <Link href="/provider/wallet" className="flex flex-col items-center">
               <FaPlusSquare size={24} className="text-gray-600" />

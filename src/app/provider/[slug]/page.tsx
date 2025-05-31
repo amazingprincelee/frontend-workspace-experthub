@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import CreateWorkspaceComponent from "@/components/create-workspace/CreateWorkspace";
 import ClientsComponent from '@/components/provider/provider-client';
-import ProviderWorkspaces from '@/components/provider/provider-workspaces'
+import ProviderWorkspaces from '@/components/provider/provider-workspaces';
+import TeamManagement from "@/components/provider/team-management"
 
 
 const Dashboard = () => <h1>Dashboard</h1>;
@@ -9,6 +10,8 @@ const Clients = () => <ClientsComponent />
 const Workspaces = () => <ProviderWorkspaces />;
 const Wallet = () => <h1>Wallet</h1>;
 const Support = () => <h1>Support</h1>;
+const Calendar = () => <h1>Calender</h1>;
+const Team = () => <TeamManagement />;
 const CreateWorkspace = () => <CreateWorkspaceComponent />;
 
 
@@ -21,6 +24,8 @@ const componentsMap: { [key: string]: () => JSX.Element } = {
   wallet: Wallet,
   support: Support,
   createspace: CreateWorkspace,
+  calendar: Calendar,
+  team: Team,
   
 };
 

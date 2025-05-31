@@ -15,6 +15,8 @@ interface DashboardStats {
   totalClients: number;
   totalSubscriptions: number;
   totalProviders: number;
+  runningWorkspaces?: number;
+  pendingWorkspaces?: number;
 }
 
 interface Workspace {
@@ -35,11 +37,10 @@ const AdminDashboard: React.FC = () => {
   const [unapprovedWorkspaces, setUnapprovedWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [error, setError] = useState<string | null>(null); // State to hold error messages
+  const [error, setError] = useState<string | null>(null);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  // Fetch dashboard statistics
   const fetchDashboardStats = async () => {
     try {
       const response = await apiService.get("/workspace/dashboard-stats", {
@@ -51,7 +52,6 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Fetch all workspaces (for "All Workspaces" section)
   const fetchAllWorkspaces = async () => {
     try {
       const response = await apiService.get(`/workspace/all?adminId=${user.id}`);
@@ -73,13 +73,10 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Fetch recommended workspaces (random workspaces)
   const fetchRecommendedWorkspaces = async () => {
     try {
       const response = await apiService.get(`/workspace/recommended`);
       console.log("Recommended Workspace Response:", response);
-
-      // Since the backend returns a single workspace, we wrap it in an array for consistency with the UI
       const workspace = response.data.workspace;
       const workspaceData: Workspace = {
         _id: workspace._id,
@@ -90,7 +87,7 @@ const AdminDashboard: React.FC = () => {
         registeredClients: workspace.registeredClients || [],
         startDate: workspace.startDate,
       };
-      setRecommendedWorkspaces([workspaceData]); // Set as an array with one item
+      setRecommendedWorkspaces([workspaceData]);
     } catch (error: any) {
       setError(error.response?.data?.message || error.message);
     }
@@ -100,27 +97,11 @@ const AdminDashboard: React.FC = () => {
     try {
       const response = await apiService.get(`/workspace/creator/${user.id}`);
       console.log('Raw API response:', response.data);
-
-      // Check if the response has the expected structure
       if (!response.data.approvedWorkspaces || !response.data.unapprovedWorkspaces) {
         console.log('Invalid response structure');
         setUnapprovedWorkspaces([]);
         return;
       }
-
-      // Map approved workspaces
-      // const approved: Workspace[] = response.data.approvedWorkspaces.map((workspace: any) => ({
-      //   _id: workspace._id,
-      //   title: workspace.title || "Untitled Workspace",
-      //   providerName: workspace.providerName || "Unknown Provider",
-      //   about: workspace.about || "No description available",
-      //   thumbnail: workspace.thumbnail || { url: "/placeholder-workspace.jpg" },
-      //   registeredClients: workspace.registeredClients || [],
-      //   startDate: workspace.startDate || new Date().toISOString(),
-      //   approved: workspace.approved !== undefined ? workspace.approved : true, // Should always be true
-      // }));
-
-      // Map unapproved workspaces
       const unapproved: Workspace[] = response.data.unapprovedWorkspaces.map((workspace: any) => ({
         _id: workspace._id,
         title: workspace.title || "Untitled Workspace",
@@ -129,13 +110,10 @@ const AdminDashboard: React.FC = () => {
         thumbnail: workspace.thumbnail || { url: "/placeholder-workspace.jpg" },
         registeredClients: workspace.registeredClients || [],
         startDate: workspace.startDate || new Date().toISOString(),
-        approved: workspace.approved !== undefined ? workspace.approved : false, // Should always be false
+        approved: workspace.approved !== undefined ? workspace.approved : false,
       }));
-
       console.log('Processed unapproved workspaces:', unapproved);
-
       setUnapprovedWorkspaces(unapproved);
-
       if (unapproved.length === 0) {
         console.log('No unapproved workspaces found, but approved workspaces exist');
       }
@@ -145,7 +123,6 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Load data when user is available
   useEffect(() => {
     if (!user || authLoading) return;
     const loadData = async () => {
@@ -161,18 +138,16 @@ const AdminDashboard: React.FC = () => {
     loadData();
   }, [user, authLoading]);
 
-  // Display error notifications
   useEffect(() => {
     if (error) {
       api.error({
         message: "Error",
         description: error,
       });
-      setError(null); // Clear the error after displaying
+      setError(null);
     }
   }, [error, api]);
 
-  // Handle carousel navigation for "All Workspaces"
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev === 0 ? allWorkspaces.length - 1 : prev - 1));
   };
@@ -191,30 +166,54 @@ const AdminDashboard: React.FC = () => {
         {contextHolder}
 
         {/* Statistics Section */}
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-6 mb-8">
           <StatCard
-            icon={<FaBuilding className="text-blue-500 text-xl sm:text-2xl" />}
-            title="Total No of Workspaces"
+            icon={<FaBuilding className="text-blue-600 text-2xl sm:text-3xl" />}
+            title="Total Workspaces"
             value={stats?.totalWorkspaces || 0}
-            bgColor="bg-blue-100"
+            bgColor="bg-blue-50"
+            borderColor="border-blue-200"
+            hoverBgColor="hover:bg-blue-100"
           />
           <StatCard
-            icon={<FaUsers className="text-yellow-500 text-xl sm:text-2xl" />}
-            title="Total No of Clients"
+            icon={<FaUsers className="text-yellow-600 text-2xl sm:text-3xl" />}
+            title="Total Clients"
             value={stats?.totalClients || 0}
-            bgColor="bg-yellow-100"
+            bgColor="bg-yellow-50"
+            borderColor="border-yellow-200"
+            hoverBgColor="hover:bg-yellow-100"
           />
           <StatCard
-            icon={<FaChartLine className="text-green-500 text-xl sm:text-2xl" />}
-            title="Total No of Subscription"
+            icon={<FaChartLine className="text-green-600 text-2xl sm:text-3xl" />}
+            title="Total Subscriptions"
             value={stats?.totalSubscriptions || 0}
-            bgColor="bg-green-100"
+            bgColor="bg-green-50"
+            borderColor="border-green-200"
+            hoverBgColor="hover:bg-green-100"
           />
           <StatCard
-            icon={<FaUserTie className="text-purple-500 text-xl sm:text-2xl" />}
+            icon={<FaUserTie className="text-purple-600 text-2xl sm:text-3xl" />}
             title="Workspace Providers"
             value={stats?.totalProviders || 0}
-            bgColor="bg-purple-100"
+            bgColor="bg-purple-50"
+            borderColor="border-purple-200"
+            hoverBgColor="hover:bg-purple-100"
+          />
+          <StatCard
+            icon={<FaBuilding className="text-indigo-600 text-2xl sm:text-3xl" />}
+            title="Running Workspaces"
+            value={stats?.runningWorkspaces || 0}
+            bgColor="bg-indigo-50"
+            borderColor="border-indigo-200"
+            hoverBgColor="hover:bg-indigo-100"
+          />
+          <StatCard
+            icon={<FaBuilding className="text-red-600 text-2xl sm:text-3xl" />}
+            title="Pending Workspaces"
+            value={stats?.pendingWorkspaces || 0}
+            bgColor="bg-red-50"
+            borderColor="border-red-200"
+            hoverBgColor="hover:bg-red-100"
           />
         </div>
 
@@ -240,8 +239,7 @@ const AdminDashboard: React.FC = () => {
               {allWorkspaces.map((workspace, index) => (
                 <div
                   key={workspace._id}
-                  className={`flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 transition-transform duration-300 ${index === currentIndex ? "block" : "hidden sm:block"
-                    }`}
+                  className={`flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 transition-transform duration-300 ${index === currentIndex ? "block" : "hidden sm:block"}`}
                 >
                   <WorkspaceCard workspace={workspace} />
                 </div>
@@ -302,15 +300,49 @@ const AdminDashboard: React.FC = () => {
 };
 
 // Reusable Stat Card Component
-const StatCard = ({ icon, title, value, bgColor }: { icon: React.ReactNode, title: string, value: number, bgColor: string }) => (
-  <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border flex items-center space-x-3">
-    <div className={`p-2 sm:p-3 ${bgColor} rounded-full`}>
+const StatCard = ({ 
+  icon, 
+  title, 
+  value, 
+  bgColor, 
+  borderColor, 
+  hoverBgColor 
+}: { 
+  icon: React.ReactNode, 
+  title: string, 
+  value: number, 
+  bgColor: string, 
+  borderColor: string, 
+  hoverBgColor: string 
+}) => (
+  <div 
+    className={`
+      ${bgColor} ${borderColor} ${hoverBgColor}
+      p-4 sm:p-5 
+      rounded-xl 
+      shadow-sm 
+      border 
+      flex flex-col 
+      items-center 
+      justify-center 
+      text-center 
+      transition-all 
+      duration-300 
+      transform 
+      hover:shadow-md 
+      hover:-translate-y-1
+      cursor-pointer
+    `}
+  >
+    <div className="p-3 rounded-full bg-white shadow-sm mb-3">
       {icon}
     </div>
-    <div>
-      <h3 className="text-xs sm:text-sm font-heading text-gray">{title}</h3>
-      <p className="text-lg sm:text-xl md:text-2xl font-bold font-heading text-primary">{value}</p>
-    </div>
+    <h3 className="text-sm sm:text-base font-heading font-medium text-gray-700 mb-1">
+      {title}
+    </h3>
+    <p className="text-xl sm:text-2xl lg:text-3xl font-bold font-heading text-gray-900">
+      {value}
+    </p>
   </div>
 );
 
@@ -329,7 +361,6 @@ const SectionContainer = ({
   emptyMessage: string
 }) => {
   const router = useRouter();
-
   return (
     <div className="mb-8 sm:mb-10">
       <div className="flex justify-between items-center mb-4">
@@ -430,7 +461,6 @@ const RecommendedWorkspaceCard = ({ workspace, onClick }: { workspace: Workspace
           year: "numeric",
         })}
       </p>
-
     </div>
   </div>
 );

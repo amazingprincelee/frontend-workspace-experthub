@@ -7,6 +7,7 @@ import {
   FaBuilding,
   FaTimes,
   FaLifeRing,
+  FaCalendar,
 } from "react-icons/fa";
 import { TiMessages } from "react-icons/ti";
 import { AiFillHome } from "react-icons/ai";
@@ -76,17 +77,17 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                 <span>Event</span>
               </Link>
             </li>
+            <li className="p-4 hover:bg-gray-200">
+              <Link href="/client/calendar" className="flex items-center" onClick={closeSidebar}>
+                <FaCalendar className="mr-2 text-gray-600" />
+                <span>Calendar</span>
+              </Link>
+            </li>
             
             <li className="p-4 hover:bg-gray-200">
               <Link href="/client/support" className="flex items-center" onClick={closeSidebar}>
                 <TiMessages className="mr-2 text-gray-600" />
                 <span>Support</span>
-              </Link>
-            </li>
-            <li className="p-4 hover:bg-gray-200">
-              <Link href="/client/support" className="flex items-center" onClick={closeSidebar}>
-                <FaLifeRing className="mr-2 text-gray-600" />
-                <span>Calender</span>
               </Link>
             </li>
           </ul>
@@ -126,6 +127,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             <Link href="/client/provider" className="flex flex-col items-center">
               <FaUserTie size={24} className="text-gray-600" />
               <span className="text-xs">Providers</span>
+            </Link>
+            <Link href="/client/calendar" className="flex flex-col items-center">
+              <FaCalendar size={24} className="text-gray-600" />
+              <span className="text-xs">Calendar</span>
             </Link>
             
             
